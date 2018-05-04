@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.11/css/all.css" integrity="sha384-p2jx59pefphTFIpeqCcISO9MdVfIm4pNnsL08A6v5vaQc4owkQqxMV8kg4Yvhaw/" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="./../style/general.css" />
+    <link rel="stylesheet" type="text/css" href="./../style/footer.css" />
+    <link rel="stylesheet" type="text/css" href="./../style/articles.css" />
+    <link href="https://fonts.googleapis.com/css?family=Work+Sans" rel="stylesheet">
+  </head>
+  <body>
+    <main>
+  <div class="article-title">Promise object in JS </div>
+  <div class="sub-title"> This note is my attempt at explaining the idea of a promise object in JS. </div>
+
+  Learning javascript as the second language, right after Ruby, is sometimes hard, as the path from zero to JS-hero is full of new - unknown to Ruby - concepts. One of them is a promise object that I happened uppon while creating my first end-to-end JS application.
+
+  <div class="article-section"> Background </div>
+
+For an MVP I was supposed to write an application which:<br><br>
+* allows user to add posts (listings) on the website,<br>
+* and display the listings on the website.
+
+<div class="article-section"> Tools </div>
+
+* Node.js, express.js, sequelizer, postgres.
+
+<div class="article-section"> Relevant code </div>
+
+<div class="article-section-2">  Listings controller </div>
+
+This file contains two CRUD methods for the listing model, one to create a record in the database(<code>create</code>) and one for retrieve all of the records(<code>list</code>).
+
+<pre><code>
+const Listing = require('../models').Listing;
+
+module.exports = {
+  create(req, res) {
+    return Listing
+      .create({
+        name: req.body['listingname'],
+        location: req.body['listinglocation'],
+        description: req.body['listingdescription'],
+        price: req.body['listingprice']
+      })
+  },
+
+  list(req, res) {
+    return Listing
+      .all()
+  },
+};
+</code></pre>
+
+<div class="article-section-2">  Router </div>
+
+This file contains two routes:<br>
+  * <code>app.get</code>, which is rendering the index.ejs with the listings retrieved from the database,<br>
+  * <code>app.post</code>, which is saving the records to the database.<br>
+
+<pre><code>
+const listingsController = require('../controllers').listings;
+var path = require('path');
+
+module.exports = function(app) {
+
+  app.get('/', function(req, res) {
+     listingsController.list(req, res)
+      .then(function(listings){
+         res.render('index', { x: listings })
+       });
+   });
+
+  app.post('/', listingsController.create);
+
+}
+</code></pre>
+
+<div class="article-section"> Explanation </div>
+
+<div class="article-section-2">  Create method </div>
+
+The create method goes one way - we want to store a new record in a database and that's it. We don't want to get anything back. Let's analyse it step by step:<br><br>
+
+1) On a homepage there is a following form:
+
+<pre><code>
+< form class="form" action="/" method="post">
+  < p2> Add a place: </p2>
+  < input type="text" name="listingname" class="single_form_window">
+  < input type="text" name="listinglocation" class="single_form_window">
+  < input type="text" name="listingprice" class="single_form_window">
+  < input type="text" name="listingdescript" class="single_form_window">
+  < input type="submit" value="submit">
+< /form>
+</code></pre>
+
+It sends us to <code>/</code> with a <code>post</code> method.<br>
+
+2) router, seeing this, calls a <code>listingsController.create</code> function:
+
+<pre><code>
+// in router
+app.post('/', listingsController.create);
+</code></pre>
+3) This function picks the data from the form and <code>create</code> a new record in the database:
+
+<pre><code>
+// in a controller
+const Listing = require('../models').Listing;
+
+module.exports = {
+  create(req, res) {
+    return Listing
+      .create({
+        name: req.body['listingname'],
+        location: req.body['listinglocation'],
+        description: req.body['listingdescription'],
+        price: req.body['listingprice']
+      })
+  }
+</code></pre>
+4) And that's it. We don' want anything back, just want to see our record in the database.<br>
+
+<i>5) Side note: <code>create</code> method also returns a promise object, but I'm ignoring it in my program as in my <code>create</code> function I just want to save the record in the database and don't want to get anything back. </i>
+
+<div class="article-section-2"> List </div>
+
+The read element of CRUD (<code>list</code> method) is more complicated.<br><br>
+
+1) We want a user to be able to see the records on the website right at the start. That's why at the <code>app.get('/')</code> we want to get all of the listings.<br>
+
+2) For this purpose I'm using the <code>listingsController.list(req, res)</code> functions that will get the data from the database and pass it to the index page.
+
+<pre><code>
+// in router
+app.get('/', function(req, res) {
+   listingsController.list(req, res)
+    .then(function(listings){
+       res.render('index', { x: listings })
+     });
+ });
+</code></pre>
+3) The <code>list</code> function is pretty straightforward
+
+<pre><code>
+// in a controller
+list(req, res) {
+  return Listing
+    .all()
+},
+</code></pre>
+
+4) What's interesting, this method is not returning all our records, but only a <strong>promise object</strong>. This promise object will <b>become the data</b> only when we trigger it.<br>
+
+5) For this purpose we use <code>.then</code>.<br>
+
+6) Let's analyze the following piece code step by step. I'm chaining the methods now for educational purposes:<br>
+<pre><code>
+listingsController.list(req, res).then(function(listings){
+    res.render('index', { x: listings })
+  });
+</code></pre>
+* we call the <code>list</code> method which returns us the promise object,<br>
+* and right after that we <i>activate</i> the data by calling <code>.then</code>.<br>
+* at the end we <code>render</code> the <code>index</code> page and pass the data to later use them on the index page.<br>
+
+<div class="article-section"> Why do we need it? </div>
+
+JS operates in the browser. As users usually do/want may operations at the same time, JS needs to be prepared for this. In order to explain it we can use the following analogy.<br>
+
+JS is a wedding planner and wants everything to be ready at the right time. Because of this, before a wedding cake enters the ballroom, it sends a person to buy this cake and wait for a right moment to enter. <br>
+
+The cake will enter a room only when asked by the wedding planner. So think of <code>.this</code> as of a call from the wedding planner to that helping person.
+</main>
+
+<form action="/add_like" method="post">
+  <button type="submit">Like</button>
+</form>
+
+<footer>
+  <div class="icons">
+    <a href="https://www.facebook.com/jzzzzzzzzzzzzzzz"><i class="fab fa-facebook-square"></i></a>
+    <a href="https://www.linkedin.com/in/justyna-zygmunt/"><i class="fab fa-linkedin"></i></a>
+    <a href="https://github.com/Kotauror"><i class="fab fa-github"></i></a>
+    <a href="https://www.codewars.com/users/Kotauror"><i class="fas fa-code"></i></a>
+  </div>
+</footer>
+  </body>
+</html>
