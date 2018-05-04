@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.11/css/all.css" integrity="sha384-p2jx59pefphTFIpeqCcISO9MdVfIm4pNnsL08A6v5vaQc4owkQqxMV8kg4Yvhaw/" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="./../style/general.css" />
+    <link rel="stylesheet" type="text/css" href="./../style/footer.css" />
+    <link rel="stylesheet" type="text/css" href="./../style/articles.css" />
+    <link href="https://fonts.googleapis.com/css?family=Work+Sans" rel="stylesheet">
+  </head>
+  <body>
+    <main>
+  <div class="article-title"> API + asynchronous JS </div>
+  <div class="sub-title"> </div>
+  JS can operate asynchronously. It means that many actions can be done simultaneously. The most basic difference can be explained on the example of the following diagramme.
+
+  <img src="https://image.ibb.co/fjQd17/Zrzut_ekranu_2018_05_03_o_19_17_57.png">
+  <img src="https://image.ibb.co/dARkg7/Zrzut_ekranu_2018_05_03_o_19_18_04.png">
+<br>
+
+  In the synchronous sequence, the program deals with the first invoked method and waits for it to finish
+  (eg. count a very long mathematical equation).
+  Only once it's finished it will go to the second etc. It won't make the next step until the previous one is completed.<br><br>
+  In the asynchronous sequence, the program will start with the first invoked method.
+  Then it will invoke the second method but won't wait for it to be finished -
+  it will be processed asynchronously (for example once the mathematical equation is solved).
+  While the second method is being processed, the program will run the next (third) function, this time a synchronous one.<br><br>
+  This seems hard to grasp and may cause problems, for example - what if the second method has something that
+  is important to the fourth method and the program will get to the forth method before it finishes with second.
+  It's the task of the designer to foresee these problems and use asynchronous functions in a way that won't break the whole website.
+  Later I'll present how I've happened upon this problem and what decision helped me solve it.<br><br>
+  It's hard, it's kind of risky for a junior devloper, but it's super handy.
+   Why? Because no user wants to wait those precious seconds for the website to load.
+   User wants to see it immediately and doesn't care that there are things that load somewhere in the back.
+   And this is exactly what a good designer should do - first load what's on the main page and what's crucial to
+   the methods that follow later.<br><br>
+
+  <div class="article-section">    Understanding asynchronous JS on the example of dealing with two independent APIs. </div>
+
+  In the most recent challenge at Makers Academy I was asked to deliver an app that shows 10 newest headlines from the Guardian, together with their summaries.<br><br>
+
+  The problem was that I was retrieving the news using Guardian's API and the summaries using Aylien API (two different calls). Below I'll:<br>
+
+  - discuss my first (broken) code;<br>
+  - explain the problem;<br>
+  - discuss my second (working) code.<br>
+
+  <div class="article-section-2">  Broken code </div>
+
+
+<pre><code>
+  getNews = function() {
+
+  var xhr = new XMLHttpRequest();
+  xhr.open("GET", "http://news-summary-api.herokuapp.com/etc...");
+  xhr.onload = function() {
+    if(xhr.status == 200) {
+      var data = JSON.parse(xhr.responseText)
+      newsarray = []
+      for (var i = 0; i < 10; i++ ) {
+        var headline = data.response.results[i].webTitle;
+        var url = data.response.results[i].webUrl;
+        var id = i.toString();
+        var summary = (function() {getSummary(url)})();
+        var singleNews = new News(headline, url, id, summary)
+        newsarray.push(singleNews);
+      }
+    } else {
+      alert('Request failed.')
+    }
+    render(newsarray)
+  }
+  xhr.send();
+}
+
+ render = function(newsarray) { // code not relevant for the note.
+
+ getSummary = function(url) {
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", 'http://news-summary...aylien?etc...' + url);
+    xhr.onload = function() {
+      if(xhr.status == 200) {
+      var summary = JSON.parse(xhr.responseText)
+      return summary
+      } else {
+      alert('Request failed.')
+     }
+    }
+    xhr.send();
+  }
+
+ getNews()
+</code></pre>
+
+What I did successfully:<br><br>
+✓ Created a new XMLHttpRequest.<br>
+✓ Told the connection to go to a particular API with a get method in an asynchronous way.<br>
+✓ Created an ` function - it will be executed once the data from API will be retrieved.<br>
+✓ Defined an if / else statement for cases when the connection is successfull / unsuccessfull.<br>
+✓ Converted the string received from API into an object.<br>
+✓ Retrieved the relevant data from API (title, url)<br>
+✓ Created a new News object.<br>
+✓ Pushed it to an array.<br>
+✓ Rendered a website with the headlines but not the summaries.<br><br>
+What didn't worked is the following line:
+<pre><code>
+  var summary = (function() {getSummary(url)})();
+</code></pre>
+What I wanted to achieve here was:<br><br>
+
+- I wanted to invoke the <code>getSummary</code> function that is meant to return me a summary from another API (check the getSummary function below),<br>
+- set the return value of this function to a variable,<br>
+- pass this variable as an argument to my newly created object.<br><br>
+
+But it didn't work.<br><br>
+
+I console-logged the summary inside the getSummary function and hence I knew that the summary was fetched properly. But when I console-logged it inside of the getNews function it returned undefined and so my app was not displaying the summaries.
+<br><br>
+What was happening?
+<br><br>
+My program was:<br><br>
+
+- specifying the API (<code>xhr.open</code>) in <code>getNews</code>;<br>
+- sending the request (<code>xhr.send</code>) in <code>getNews</code> - here to browser queries the API.<br>
+- running the function block (<code>xhr.onload</code>) when the answer from the <code>xhr.send</code> was be ready.<br>
+- the page was rendered inside of the <code>xhr.onload</code> method.<br>
+- it didn't know the summary because:<br><br>
+
+the <code>getSummary</code> returned nothing because it's a asynchronous function (not the whole getSummary is async, only the onload part of it) and async functions (at least in vanilla JS) don't return any values.<br>
+Therefore the website, in place of the summary, said 'undefined' because the summaries weren't passed to the object. JS, when the argument that was meant to be passed wasn't passed, set the value to undefined.
+<br><br>
+
+<div class="article-section-2">  Working code </div>
+
+<pre><code>
+getNews = function() {
+  var xhr = new XMLHttpRequest();
+  xhr.open("GET", "http://news-summary-api.herokuapp.com/etc...");
+  xhr.onload = function() {
+    if(xhr.status == 200) {
+      console.log(xhr)
+      var data = JSON.parse(xhr.responseText)
+      newsarray = []
+      for (var i = 0; i < 10; i++ ) {
+        var headline = data.response.results[i].webTitle;
+        var url = data.response.results[i].webUrl;
+        var id = i.toString();
+        var linkToImage = data.response.results[i].fields.thumbnail;
+        var singleNews = new News(headline, url, id, linkToImage)
+        getSummary(singleNews);
+        newsarray.push(singleNews);
+      }
+    }
+    render(newsarray)
+  }
+  xhr.send();
+}
+
+render = function(newsarray) {
+}
+
+getSummary = function(singleNews) {
+  var xhr = new XMLHttpRequest();
+  xhr.open("GET", 'http://news-summary-api/etc...' + singleNews.url);
+  xhr.onload = function() {
+    if(xhr.status == 200) {
+      var summary = JSON.parse(xhr.responseText)
+      singleNews.summary = summary.sentences
+    }
+  }
+  xhr.send();
+}
+
+function _onClick(singleNews) {
+}
+
+_cleanField = function() {
+}
+
+_displayHeadline = function(singleNews) {
+}
+
+_displaySummary = function(singleNews) {
+}
+
+_displayUrl = function(singleNews) {
+}
+
+_displayImage = function(singleNews) {
+}
+
+getNews()
+</code></pre>
+
+I've made a minor changes that helped. <br>
+Instead of passing the summary as an argument to a newly created object in the <code>getNews</code>, I've fetched the summary and passed it to the <code>News</code> object in the onload method inside of <code>getSummary</code> method.<br>
+<br>
+Broken code logic:
+<img src="https://image.ibb.co/hbTnuS/Zrzut_ekranu_2018_05_03_o_19_21_10.png"><br>
+Working code logic:
+<img src="https://image.ibb.co/nOm1M7/Zrzut_ekranu_2018_05_03_o_19_21_15.png"><br>
+In the first case the program went to the <code>getSummary</code> method where was another async method (onload). The second async method didn't know the context of the other methods. Therefore whent it couldn't return the values to objects/variables outside of it.<br><br>
+
+From this example we can draw the following conclusion: when we're dealing with async methods, we can only assign what the API returns inside of them and only to non-primitives (eg. objects).<br><br>
+
+There is no way to return the value from onload to other functions that are outside of it, as I wanted to do in the first version of my code.<br><br>
+
+In the second case I've skipped the "coming back / return part". Inside of the first onload method (inside of the <code>getNews</code>) I've assigned values from the first API and I've passed the incomplete object to the <code>getSummary</code>. Inside of the onload method of the <code>getSummary</code>, I've assigned values from the second API to each object. As a result, after the second API returned, the objects were complete.<br><br>
+
+This was a good design decision as the main page contains only the titles fetched from the first API. The summaries are available only on click. Therefore the website 'had time' to fetch the summaries from the second API when the user was still reading headlines from the first ;)<br><br>
+
+If you go to my app and click on one of the news very quickly after loading the page, you may - for a brief second - see that the summary is undefined. It will mean that it took you less time to click than it took the second API to return the summary.<br><br>
+
+</main>
+<footer>
+  <div class="icons">
+    <a href="https://www.facebook.com/jzzzzzzzzzzzzzzz"><i class="fab fa-facebook-square"></i></a>
+    <a href="https://www.linkedin.com/in/justyna-zygmunt/"><i class="fab fa-linkedin"></i></a>
+    <a href="https://github.com/Kotauror"><i class="fab fa-github"></i></a>
+    <a href="https://www.codewars.com/users/Kotauror"><i class="fas fa-code"></i></a>
+  </div>
+</footer>
+  </body>
+</html>

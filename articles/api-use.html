@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.11/css/all.css" integrity="sha384-p2jx59pefphTFIpeqCcISO9MdVfIm4pNnsL08A6v5vaQc4owkQqxMV8kg4Yvhaw/" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="./../style/general.css" />
+    <link rel="stylesheet" type="text/css" href="./../style/footer.css" />
+    <link rel="stylesheet" type="text/css" href="./../style/articles.css" />
+    <link href="https://fonts.googleapis.com/css?family=Work+Sans" rel="stylesheet">
+  </head>
+  <body>
+    <main>
+  <div class="article-title"> API - how to use it?</div>
+  <div class="sub-title"> In my recent challenge at Makers Academy, I was asked to use Guardian's API to build a news-aggregating app. Here are some of my notes. </div>
+
+  An application program interface (API) is a set of routines, protocols, and tools for building software applications. In other words, API can be perceived as a tool that allows a program to communicate with other programs.
+
+  This is how I imagine the API works:
+
+  <img src="https://image.ibb.co/c16t17/Zrzut_ekranu_2018_05_03_o_18_52_01.png">
+
+
+  <div class="article-section"> How to use API </div>
+
+  First and the most important part: we need to write an http:// url that represents the API's address. Let's analyze the following example:<br><br>
+  https://content.guardianapis.com/search?q=12%20years%20a%20slave&format=json&tag=film/film,tone/reviews&from-date=2010-01-01&show-tags=contributor&show-fields=starRating,headline,thumbnail,short-url&show-refinements=all&order-by=relevance
+<br><br>
+  The part below is an address of the API server.<br>
+
+<pre><code>
+  https ://content.guardianapis.com/
+</code></pre>
+
+The <code>search</code> keyword below represnets the API's endpoint. Remember routers? The <code>/search</code> is like a route for API - it tells the server which route the user wants to query.
+
+Example:
+<pre><code>
+  https: //content.guardianapis.com/search
+</code></pre>
+
+If the API requires a key to authenticate who's calling, we need to add <code>?</code> to our query.<br>
+
+You can end your query here - for example:
+<pre><code>
+  https://content.guardianapis.com/world?api-key=<SECRET_API_KEY>
+</code></pre>
+
+Or add additional (other than API key) parameters to the query. Below you san see example parameters (everything after <code>?</code> is a parameter)
+
+<pre><code>
+q=12%20years%20a%20slave&format=json&tag=film/film,tone/reviews&from-date=2010-01-01&
+show-tags=contributor&show-fields=starRating,headline,thumbnail,short-url&
+show-refinements=all&order-by=relevance
+</code></pre>
+
+- First one of them is query - <code>q</code> - which is the term that we search for. <br>
+- Later there are other parameters, for example format or show-fields.<br>
+- To learn what parameters are available, check the API's documentation. In case of Guardian: http://open-platform.theguardian.com/documentation/search <br>
+- Parameters are separated by <code>&</code> . <br>
+- The parameters are key-value pairs. There can be many values to one key (this situation is called list parameters). <br>
+- Below is an example of a key-value pair where there are many elements in value: <br>
+<pre><code>
+show-fields=starRating,headline,thumbnail,short-url
+</code></pre>
+
+<code>show-fields</code> is a key and <code>starRating,headline,thumbnail,short-url</code> are 4 values.
+
+
+<div class="article-section"> API returned data and my head hurts from reading it. </div>
+
+Right.<br><br>
+
+There are three things that may help you:<br><br>
+
+- If you're receiving too much data as a response, consider narrowing the request (adding more key and value pairs to the http request);<br>
+- Use online JSON viewers that help to structure the file like http://jsonviewer.stack.hu/<br>
+- API's response is a string. It's a good idea to make it object as soon as possible. Thanks to this operation, it will be easier to use this pile of data. We can do it using JSON.parse method as below: <br>
+
+<pre><code>
+getNews = function() {
+  var xhr = new XMLHttpRequest();
+  xhr.open("GET", "https://content.guardianapis.com/etc");
+  xhr.onload = function() {
+    if(xhr.status == 200) { // if success
+      var data = JSON.parse(xhr.responseText) <<<<< ---------
+    }
+  }
+  xhr.send();
+}
+</code></pre>
+
+</main>
+<footer>
+  <div class="icons">
+    <a href="https://www.facebook.com/jzzzzzzzzzzzzzzz"><i class="fab fa-facebook-square"></i></a>
+    <a href="https://www.linkedin.com/in/justyna-zygmunt/"><i class="fab fa-linkedin"></i></a>
+    <a href="https://github.com/Kotauror"><i class="fab fa-github"></i></a>
+    <a href="https://www.codewars.com/users/Kotauror"><i class="fas fa-code"></i></a>
+  </div>
+</footer>
+  </body>
+</html>

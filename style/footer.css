@@ -1,0 +1,31 @@
+footer {
+  background-color: #00D2C7;
+  bottom: 0;
+  width: 100%;
+  color: #F0EFDD;
+}
+
+.icons {
+  z-index: -1;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: fit-content;
+}
+
+.fab {
+  margin-left: auto;
+  margin-right: auto;
+  display: inline-block;
+  font-size: 1.5em;
+  padding: 0.3em;
+}
+
+footer a, .footer a:link, .footer a:visited, .footer a:active {
+  text-decoration: none;
+  color: white;
+}
+
+footer a:hover {
+  color: #f4db90;
+}
