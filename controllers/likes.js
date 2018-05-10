@@ -2,14 +2,20 @@ const Like = require('../models').Like;
 
 module.exports = {
   create(req, res) {
-    return Listing
+    return Like
       .create({
-        art_id: req.body['art_id']
+        art_id: parseInt(req.body['art_id'])
       })
   },
 
-  // list(req, res) {
-  //   return Listing
-  //     .all()
-  // },
-};
+  count(number) {
+    return Like.findAll({
+      where: {
+        art_id: number,
+      },
+    }).then(function(rows) {
+      return rows.length;
+    });
+  }
+
+}

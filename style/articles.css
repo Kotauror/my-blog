@@ -18,6 +18,7 @@ main {
   text-align: center;
   padding-bottom: 0.6em;
   font-size: 3em;
+  line-height: 110%;
 }
 
 .sub-title {
@@ -46,5 +47,68 @@ pre {
   border-width: 0.1em;
   border-color: #c3c3c3;
   line-height: 120% !important;
-  width: fit-content;
+  overflow-x: scroll;
+}
+
+.photo-data {
+  margin: 0;
+  font-size: 0.7em;
+  padding-bottom: 1em;
+}
+
+.likes {
+  position: fixed;
+  padding-left: 10%;
+}
+
+.like_button {
+  border: none;
+  background-color: inherit;
+  font-size: 1.4em;
+  color: #5cd3c8;
+}
+
+.like_button:hover {
+  transform: scale(1.6);
+  color: red !important;
+}
+
+.comment-author-form {
+  height: 2em;
+}
+
+.comment-content-form {
+  height: 2em;
+  width: 20em;
+}
+
+.comments_header {
+  padding-top: 1em;
+  margin-bottom: 1em;
+  font-size: 1.2em;
+  color: #6abbb4;
+  width: 100%;
+  border-bottom: 0.1em solid #6abbb4;
+}
+
+.single_comment {
+  padding: 0.5em;
+}
+
+.single_comment h2 {
+  font-size: 1.1em;
+  margin: 0;
+}
+
+.single_comment h3 {
+  font-size: 1em;
+  margin: 0;
+  padding-left: 3%;
+}
+
+.single_comment h4 {
+  font-size: 0.85em;
+  margin: 0;
+  padding-left: 3%;
+  color: #647d7b;
 }

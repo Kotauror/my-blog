@@ -16,7 +16,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.listen(3000, () => console.log('Example app listening on port 3000!'))
 
-require('./routes')(app);
+require('./routes/index.js')(app);
+require('./routes/varia-articles.js')(app);
+require('./routes/tech-articles.js')(app);
 app.get('*', (req, res) => res.status(404).send({
   message: 'Not found.',
 }));

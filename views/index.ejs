@@ -6,76 +6,23 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.11/css/all.css" integrity="sha384-p2jx59pefphTFIpeqCcISO9MdVfIm4pNnsL08A6v5vaQc4owkQqxMV8kg4Yvhaw/" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="../style/general.css" />
     <link rel="stylesheet" type="text/css" href="../style/footer.css" />
+    <link rel="stylesheet" type="text/css" href="../style/articles.css" />
     <link href="https://fonts.googleapis.com/css?family=Work+Sans" rel="stylesheet">
   </head>
   <body>
   <header>
+    <div class="varia-link"><a href="/varia-articles">Go to Varia section</a></div>
     <div class="jusia"> A blog by Justyna Zygmunt </div>
-    <div class="jusia2"> tech and stuff </div>
+    <div class="jusia2"> Tech section </div>
   </header>
   <main>
-    <article class="post">
-      <a href="/api-async"><section class="post-header">
-      <section class="post-header">
-          <h1 class="post-title">API + asynchronous JS </h2>
-      </section>
-      <section class="short">
-          <p1>My first post - short description...<i class="fas fa-arrow-right"></i></p>
-      </section>
-    </a>
-      <div class="post-info">
-          <a href="/author/about/"><p2>J.Zygmunt <a href="https://github.com/Kotauror"><i class="fab fa-github"></i></a></a> | </p2>
-          <time class="post-date" datetime="2018-05-02"><p3>10 Mar 2018</p3></time>
-      </div>
-    </article>
-    <article class="post">
-      <a href="/api-use"><section class="post-header">
-      <section class="post-header">
-          <h1 class="post-title">How to use an API</h2>
-      </section>
-      <section class="short">
-          <p1>My first post - short description...<i class="fas fa-arrow-right"></i></p>
-      </section>
-    </a>
-      <div class="post-info">
-          <a href="/author/about/"><p2>J.Zygmunt <a href="https://github.com/Kotauror"><i class="fab fa-github"></i></a></a> | </p2>
-          <time class="post-date" datetime="2018-05-02"><p3>10 Mar 2018</p3></time>
-      </div>
-    </article>
-    <article class="post">
-      <a href="/event-listener"><section class="post-header">
-          <h1 class="post-title">Simple event listener - get data from html form</h2>
-      </section>
-      <section class="short">
-          <p1>My first post - short description...<i class="fas fa-arrow-right"></i></p>
-      </section>
-    </a>
-      <div class="post-info">
-          <a href="/author/about/"><p2>Justyna Zygmunt | </p2></a>
-          <time class="post-date" datetime="2018-05-02"><p3>09 Mar 2018</p3></time>
-      </div>
-    </article>
-    <article class="post">
-      <a href="/promise-object"><section class="post-header">
-          <h1 class="post-title">Promise object in JS</h2>
-      </section>
-      <section class="short">
-          <p1>My first post - short description...<i class="fas fa-arrow-right"></i></p>
-      </section>
-    </a>
-      <div class="post-info">
-          <a href="/author/about/"><p2>J.Zygmunt <a href="https://github.com/Kotauror"><i class="fab fa-github"></i></a></a> | </p2>
-          <time class="post-date" datetime="2018-05-02"><p3>01 Mar 2018</p3></time>
-      </div>
-    </article>
+    <%- include tech_articles_info/sort_by.ejs %>
+    <%- include tech_articles_info/recursion.ejs %>
+    <%- include tech_articles_info/node-server-test.ejs %>
+    <%- include tech_articles_info/api-async.ejs %>
+    <%- include tech_articles_info/api-use.ejs %>
+    <%- include tech_articles_info/event-listener.ejs %>
+    <%- include tech_articles_info/promise-object.ejs %>
   </main>
-  <footer>
-    <div class="icons">
-      <a href="https://www.facebook.com/jzzzzzzzzzzzzzzz"><i class="fab fa-facebook-square"></i></a>
-      <a href="https://www.linkedin.com/in/justyna-zygmunt/"><i class="fab fa-linkedin"></i></a>
-      <a href="https://github.com/Kotauror"><i class="fab fa-github"></i></a>
-      <a href="https://www.codewars.com/users/Kotauror"><i class="fas fa-code"></i></a>
-    </div>
-  </footer>
-  </body>
-</html>
+
+<%- include partials/footer.ejs %>

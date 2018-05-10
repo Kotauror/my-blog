@@ -1,0 +1,7 @@
+<div class="comments_header"> Add a comment: </div>
+<form action="/add_comment" method="post">
+  <input type="text" name="author" value="author" class="comment-author-form">
+  <input type="text" name="content" value="content" class="comment-content-form">
+  <button type="submit" class="comment_button"><i class="far fa-comment-dots"></i></button>
+  <input type="hidden" name="art_id" value="<%= value %>">
+</form>

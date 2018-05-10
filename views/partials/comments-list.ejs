@@ -1,0 +1,9 @@
+<div class="comments_header"> Comments: </div>
+<% var comm = comments.reverse() %>
+<% for (i = 0; i < comm.length; i++) { %>
+   <div class="single_comment">
+    <h2><%= comm[i].author %> wrote:</h1>
+    <h3><%= comm[i].content %> </h2>
+    <h4><%= comm[i].createdAt %> </h3>
+   </div>
+<% } %>

@@ -1,0 +1,33 @@
+<%- include ../partials/header.ejs %>
+  <div class="likes">
+    <%- include('../partials/likes-form.ejs', {value: 8}); %>
+    Likes so far: <%= likesCount %><br>
+  <a href="/"> Back to main page <i class="fas fa-home"></i></a>
+  </div>
+  <main>
+<div class="article-title"> Oceanic life </div>
+<div class="sub-title"> Tribute to the weirdest underwater animals  </div>
+In this note I want to talk about my fav kind of animals - underwater weirdos! From weird food habits, through bizarre sex life, to killing for fun.
+
+<div class="article-section-2">  Angler fish </div>
+Let's start with angler fish - a scary-looking lovely creature many of you know from Where is Nemo. <br>
+<img src="http://1.bp.blogspot.com/-PVxqDrR0JjI/VIKR2Vb1FfI/AAAAAAAAIXA/dJWy0OPs00E/s1600/g0eGnfN.jpg" width="100%">
+<div class="photo-data">Angler Fish from Where is Nemo</div>
+What you haven't learned from this movies is that angler fish world is female-dominated. <br>The males are tiny, with simplified body features, and they live as parasites on the females. <br>
+The males have virtually one purpose - to find a female and deliver sperm by literally fusing with her body. 
+<img src="https://cdn.zmescience.com/wp-content/uploads/2014/04/angler-fish-male.jpg" width="100%">
+<div class="photo-data">ZME Science</div>
+While biting, males' lips are melting, then his other organs start melting as well, and finally he will fuse into the side of female's body.
+
+
+
+
+<div class="comments">
+  <%- include('../partials/comments-form.ejs', {value: 8}); %>
+  <%- include ../partials/comments-list.ejs %>
+</div>
+
+
+</main>
+
+  <%- include ../partials/footer.ejs %>

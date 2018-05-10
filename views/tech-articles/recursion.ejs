@@ -1,0 +1,149 @@
+<%- include ../partials/header.ejs %>
+<div class="likes">
+  <%- include('../partials/likes-form.ejs', {value: 6}); %>
+  Likes so far: <%= likesCount %><br>
+<a href="/"> Back to main page <i class="fas fa-home"></i></a>
+</div>
+
+
+  <main>
+
+    <div class="article-title">How to use recursion instead of <code>for</code> loop. </div>
+    <div class="sub-title">Looks & feels sooo good.
+ </div>
+
+
+    <div class="article-section"> Fibonacci using for loop - 1st way </div>
+
+<pre><code>
+array = [0,1]
+
+for i in 0..20 do
+  array << array[-1] + array[-2]
+end
+
+array[20]
+</code></pre>
+
+    <div class="article-section"> Fibonacci using for loop - 2nd way
+ </div>
+
+
+ <pre><code>
+first = 0
+second = 1
+
+for i in 0..20 do
+ chosen = first + second
+ first = second
+ second = chosen
+end
+
+chosen
+</code></pre>
+
+    <div class="article-section"> Fibonacci using recursion </div>
+
+    <div class="article-section-2"> 1. step </div>
+
+    <pre><code>
+def fibonacci(number)
+  n[i] + n[i+1] = n[i+2]
+end
+</code></pre>
+
+This is the heart of Fibonacci - the sum first and second element gives the third element.
+It's easy to see that a function can be written in a recursive way when there is a relationship between the past and future elements.
+
+    <div class="article-section-2"> 2. step </div>
+
+    <pre><code>
+def fibonacci(number)
+  fibonacci(i) + fibonacci(i+1) = fibonacci(i+2)
+end
+</code></pre>
+
+
+Recursion means repetitiveness(recurrence) - we're going to use the same function. Instead of using a loop (like above), we're using the function itself (with different arguments - see below).<br><br>
+
+As we're not using element's position ([] square brackets), but the function itself, we need to change [] to () - typical for functions.<br><br>
+
+
+The number passed in the main fibonacci function (def fibonacci(number)) is the number(position) in the fibonacci sequence that interests us (the 20th element). We don't care about other elements.<br><br>
+
+To each element (including 20th), applies the same rule - it's a sum of two previous elements. Hence we can write it like that:<br><br>
+
+<div class="article-section-2"> 3. step </div>
+
+<pre><code>
+def fibonacci(number)
+  fibonacci(number-2) + fibonacci(number-1)
+end
+
+fibonacci(20)
+
+</code></pre>
+
+
+The function in this form will go forever (try it!) - you'll kill your computer. Right now fibonacci is not really fibonacci - it just tells us that we're interested in a sum of two previous calls.<br><br>
+
+We want to end our fibonacci once the first element <code>(fibonacci(number-2))</code> will equal 0 and second (<code>fibonacci(number-1)</code>) will equal 1. To end our recursion, we need to have stop condition. We know that the first element in fibonacci is 0 and so we want to stop there:<br>
+
+<pre><code>
+fibonacci(0) == 0
+</code></pre>
+
+Since our fibonacci method is using two positions at the same time (to sum them), we need to know the second last (second before the stop - second stop condition):
+
+<pre><code>
+fibonacci(1) == 1
+</code></pre>
+
+Since we don't want our function to run forever, we need to use this stop condition using return.
+
+
+    <div class="article-section-2"> 4. step</div>
+
+    <pre><code>
+def fibonacci(number)
+  if number == 0 then
+    return 0
+  end
+  if number == 1 then
+    return 1
+  end
+  return fibonacci(number-2) + fibonacci(number-1)
+end
+
+fibonacci(20)
+  </code></pre>
+
+  Imagine running fibonacci(1) - position 1 in the sequence - it will simply return 1. Now fibonacci(2) - since this number won't be stopped on either of stop conditions, it will go to return <code>fibonacci(number-2) + fibonacci(number-1)</code>.<br><br>
+  First it will encounter fibonacci(2-2) - it will, according to
+  <pre><code>
+if number == 0 then
+  return 0
+end
+</code></pre>
+return 0. This 0 will be added to fibonacci(2-1), which according to:
+
+<pre><code>
+if number == 1 then
+  return 1
+end
+</code></pre>
+returns 1.<br><br>
+
+0 + 1 equals 1, and this is the third (2nd index) position in the fibonacci sequence.
+
+<img src="https://image.ibb.co/bSDyjx/img.jpg" width="100%">
+
+
+<div class="comments">
+  <%- include('../partials/comments-form.ejs', {value: 6}); %>
+  <%- include ../partials/comments-list.ejs %>
+</div>
+
+</main>
+
+  <%- include ../partials/footer.ejs %>

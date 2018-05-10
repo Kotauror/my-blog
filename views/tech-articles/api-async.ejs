@@ -1,15 +1,10 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8">
-    <title></title>
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.11/css/all.css" integrity="sha384-p2jx59pefphTFIpeqCcISO9MdVfIm4pNnsL08A6v5vaQc4owkQqxMV8kg4Yvhaw/" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href="./../style/general.css" />
-    <link rel="stylesheet" type="text/css" href="./../style/footer.css" />
-    <link rel="stylesheet" type="text/css" href="./../style/articles.css" />
-    <link href="https://fonts.googleapis.com/css?family=Work+Sans" rel="stylesheet">
-  </head>
-  <body>
+<%- include ../partials/header.ejs %>
+<div class="likes">
+  <%- include('../partials/likes-form.ejs', {value: 4}); %>
+  Likes so far: <%= likesCount %><br>
+  <a href="/"> Back to main page <i class="fas fa-home"></i></a>
+</div>
+
     <main>
   <div class="article-title"> API + asynchronous JS </div>
   <div class="sub-title"> </div>
@@ -50,7 +45,7 @@
 
 
 <pre><code>
-  getNews = function() {
+getNews = function() {
 
   var xhr = new XMLHttpRequest();
   xhr.open("GET", "http://news-summary-api.herokuapp.com/etc...");
@@ -212,14 +207,11 @@ This was a good design decision as the main page contains only the titles fetche
 
 If you go to my app and click on one of the news very quickly after loading the page, you may - for a brief second - see that the summary is undefined. It will mean that it took you less time to click than it took the second API to return the summary.<br><br>
 
+<div class="comments">
+  <%- include('../partials/comments-form.ejs', {value: 4}); %>
+  <%- include ../partials/comments-list.ejs %>
+</div>
+
 </main>
-<footer>
-  <div class="icons">
-    <a href="https://www.facebook.com/jzzzzzzzzzzzzzzz"><i class="fab fa-facebook-square"></i></a>
-    <a href="https://www.linkedin.com/in/justyna-zygmunt/"><i class="fab fa-linkedin"></i></a>
-    <a href="https://github.com/Kotauror"><i class="fab fa-github"></i></a>
-    <a href="https://www.codewars.com/users/Kotauror"><i class="fas fa-code"></i></a>
-  </div>
-</footer>
-  </body>
-</html>
+
+<%- include ../partials/footer.ejs %>

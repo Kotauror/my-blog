@@ -1,15 +1,11 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8">
-    <title></title>
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.11/css/all.css" integrity="sha384-p2jx59pefphTFIpeqCcISO9MdVfIm4pNnsL08A6v5vaQc4owkQqxMV8kg4Yvhaw/" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href="./../style/general.css" />
-    <link rel="stylesheet" type="text/css" href="./../style/footer.css" />
-    <link rel="stylesheet" type="text/css" href="./../style/articles.css" />
-    <link href="https://fonts.googleapis.com/css?family=Work+Sans" rel="stylesheet">
-  </head>
-  <body>
+<%- include ../partials/header.ejs %>
+<div class="likes">
+  <%- include('../partials/likes-form.ejs', {value: 3}); %>
+  Likes so far: <%= likesCount %><br>
+  <a href="/"> Back to main page <i class="fas fa-home"></i></a>
+</div>
+
+
     <main>
   <div class="article-title"> API - how to use it?</div>
   <div class="sub-title"> In my recent challenge at Makers Academy, I was asked to use Guardian's API to build a news-aggregating app. Here are some of my notes. </div>
@@ -29,21 +25,21 @@
   The part below is an address of the API server.<br>
 
 <pre><code>
-  https ://content.guardianapis.com/
+https ://content.guardianapis.com/
 </code></pre>
 
 The <code>search</code> keyword below represnets the API's endpoint. Remember routers? The <code>/search</code> is like a route for API - it tells the server which route the user wants to query.
 
 Example:
 <pre><code>
-  https: //content.guardianapis.com/search
+https: //content.guardianapis.com/search
 </code></pre>
 
 If the API requires a key to authenticate who's calling, we need to add <code>?</code> to our query.<br>
 
 You can end your query here - for example:
 <pre><code>
-  https://content.guardianapis.com/world?api-key=<SECRET_API_KEY>
+https://content.guardianapis.com/world?api-key=<SECRET_API_KEY>
 </code></pre>
 
 Or add additional (other than API key) parameters to the query. Below you san see example parameters (everything after <code>?</code> is a parameter)
@@ -90,14 +86,11 @@ getNews = function() {
 }
 </code></pre>
 
+<div class="comments">
+  <%- include('../partials/comments-form.ejs', {value: 3}); %>
+  <%- include ../partials/comments-list.ejs %>
+</div>
+
 </main>
-<footer>
-  <div class="icons">
-    <a href="https://www.facebook.com/jzzzzzzzzzzzzzzz"><i class="fab fa-facebook-square"></i></a>
-    <a href="https://www.linkedin.com/in/justyna-zygmunt/"><i class="fab fa-linkedin"></i></a>
-    <a href="https://github.com/Kotauror"><i class="fab fa-github"></i></a>
-    <a href="https://www.codewars.com/users/Kotauror"><i class="fas fa-code"></i></a>
-  </div>
-</footer>
-  </body>
-</html>
+
+<%- include ../partials/footer.ejs %>

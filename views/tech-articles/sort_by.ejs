@@ -1,0 +1,81 @@
+<%- include ../partials/header.ejs %>
+<div class="likes">
+  <%- include('../partials/likes-form.ejs', {value: 5}); %>
+Likes so far: <%= likesCount %><br>
+<a href="/"> Back to main page <i class="fas fa-home"></i></a>
+</div>
+
+
+  <main>
+
+    <div class="article-title">Sort_by ruby method  </div>
+    <div class="sub-title">Sorting using multiple attributes
+ </div>
+
+I guess everyone knows that feeling when you struggle with a codewars kata, create (or even not!) a looong solution, then you check the solutions of of others and go whaaaaaaaat -- they did it in one line?<br>
+ This is how I felt today and this is how I refreshed my memory of Ruby's <code>sort_by</code> method.
+
+    <div class="article-section"> Task </div>
+
+    <pre>
+My friend John and I are members of the "Fat to Fit Club (FFC)".
+John is worried because each month a list with the weights of members is published and each month
+he is the last on the list which means he is the heaviest.
+I am the one who establishes the list so I told him:
+"Don't worry any more, I will modify the order of the list".
+It was decided to attribute a "weight" to numbers.
+The weight of a number will be from now on the sum of its digits.
+
+For example 99 will have "weight" 18, 100 will have "weight" 1 so in the list 100 will come before 99.
+Given a string with the weights of FFC members in normal order can you give this
+string ordered by "weights" of these numbers?
+
+Example:
+"56 65 74 100 99 68 86 180 90" ordered by numbers weights becomes: "100 180 90 56 65 74 68 86 99"
+
+When two numbers have the same "weight", let us class them as if they were strings and not numbers:
+100 is before 180 because its "weight" (1) is less than the one of 180 (9) and 180 is before 90 since,
+having the same "weight" (9) it comes before as a string.
+
+All numbers in the list are positive numbers and the list can be empty.
+
+</pre>
+
+    <div class="article-section"> My initial (almost working) solution </div>
+
+    My plan was to create a hash map, where each number(key) has a value which is a sum of the numbers the key is built of. Sounds great and almost worked :D The problem was with two k&v pairs having the same value - doing additional sorting for pairs having the same values was a real pain so I gave up and checked other peoples solutions. And I was shocked.
+
+    <div class="article-section"> One-liner and how does it work </div>
+
+    This is the solution
+    <pre><code>
+def order_weight(strng)
+  strng.split.sort_by { |n| [n.chars.map(&:to_i).reduce(:+), n] }.join(" ")
+end
+</code></pre>
+
+    <div class="article-section-2"> What is it doing generally </div>
+
+    - Creates an array from the string by splitting it; <br>
+    - Calls sort by with n parameters.<br>
+    - Joins the array to create the string.<br>
+
+    <div class="article-section-2"> Closer look at <code>sort_by</code> </div>
+
+    <code>sort_by</code> sorts from low to high. So given the following array: [2, 1, 3], <code>[2, 1, 3].sort_by{ |i| i }</code> will return [1, 2, 3]. In our case, we also want to sort the numbers, and we will use the <code>|n|</code> parameters as they used the <code>|i|</code>. The only difference is that instead of simply returning numbers (i), we will sort our array by two parameters:<br>
+    - <code>n.chars.map(&:to_i).reduce(:+)</code> - according to the sum of numbers which build the number; <br>
+    - <code>n</code> according to the numbers as such (covers the case that was problematic in the hash solution).<br><br>
+
+    The two parameters work like this:<br><br>
+
+    - sort according to the first one, <br>,
+    - if there are two results which are the same, take the second parameter under consideration.
+
+<div class="comments">
+  <%- include('../partials/comments-form.ejs', {value: 5}); %>
+  <%- include ../partials/comments-list.ejs %>
+</div>
+
+</main>
+
+  <%- include ../partials/footer.ejs %>

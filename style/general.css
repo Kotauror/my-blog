@@ -13,8 +13,12 @@ header {
   color: #f4f4f4;
 }
 
+.varia-link {
+  text-align: end;
+  padding: 0.5em;
+}
+
 .jusia {
-  padding-top: 1em;
   font-size: 2em;
 }
 
@@ -41,6 +45,7 @@ main {
 
 .post-info {
   margin-bottom: 0.8em;
+  line-height: 85%;
 }
 
 a:link {

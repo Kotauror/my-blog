@@ -1,0 +1,132 @@
+html, body {
+  height: 100%;
+  position: relative;
+}
+
+.me {
+  padding-top: 4em;
+  border-radius: 10em;
+  width: 13%;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+}
+
+.main-me-description {
+  padding-top: 2em;
+  text-align: center;
+  padding-bottom: 1em;
+  font-size: 1.5em;
+}
+
+.sec-me-description {
+  text-align: center;
+  margin-bottom: 4em;
+}
+
+.ending-me {
+  text-align: center;
+}
+
+.grid {
+  display: grid;
+  width: 40%;
+  margin-left: auto;
+  margin-right: auto;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-column-gap: 0.8em;
+  margin-top: 2em;
+  margin-bottom: 1.5em;
+}
+
+@media only screen and (max-width: 800px) {
+    .me {
+      width: 15%;
+    }
+    .grid {
+        width: 100% !important;
+    }
+}
+
+.one-grid {
+  text-align: center;
+}
+
+.skill {
+  font-size: 1.1em;
+}
+
+.score {
+  font-size: 0.8em;
+  color: #ffc307;
+}
+
+.projects-info {
+  margin-top: 3em;
+  margin-bottom: 3em;
+  text-align: center;
+  font-size: 1.5em;
+}
+
+.projects-grid {
+  width: 50%;
+  margin-left: auto;
+  margin-right: auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-column-gap: 0.1em;
+  grid-row-gap: 0.1em;
+  text-align: center;
+}
+
+.project {
+  height: 5em;
+  opacity: 0.5;
+  background-position: center;
+  background-size: cover;
+}
+
+.project:hover p4 {
+  visibility: visible;
+  position: relative;
+  top: 10%;
+}
+
+.project:hover {
+  opacity: 1;
+  background-image: none;
+}
+
+.ror {
+  background-image: url("https://image.ibb.co/d5FO3n/Zrzut_ekranu_2018_05_04_o_16_02_06.png");
+  background-position: left;
+}
+
+.emu {
+  background-image: url("https://image.ibb.co/iLqneS/Zrzut_ekranu_2018_05_04_o_15_35_45.png");
+}
+
+.bomb {
+  background-image: url("https://image.ibb.co/buoCDn/Zrzut_ekranu_2018_05_04_o_15_38_52.png");
+}
+
+.guardian {
+  background-image: url("https://www.ucl.ac.uk/bartlett/energy/sites/bartlett/files/the_guardian_webcrop.jpg");
+}
+
+.bowling {
+  background-image: url("https://image.ibb.co/nKtLYn/Zrzut_ekranu_2018_05_04_o_15_44_20.png");
+}
+
+.tic {
+  background-image: url("http://tiphero.com/wp-content/uploads/2015/11/TicTacToeBoard-780x364.jpg");
+}
+
+.ending-me {
+  padding-top: 3em;
+  padding-bottom: 2em;
+}
+
+p4 {
+  visibility: hidden;
+}

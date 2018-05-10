@@ -1,15 +1,11 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8">
-    <title></title>
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.11/css/all.css" integrity="sha384-p2jx59pefphTFIpeqCcISO9MdVfIm4pNnsL08A6v5vaQc4owkQqxMV8kg4Yvhaw/" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href="./../style/general.css" />
-    <link rel="stylesheet" type="text/css" href="./../style/footer.css" />
-    <link rel="stylesheet" type="text/css" href="./../style/articles.css" />
-    <link href="https://fonts.googleapis.com/css?family=Work+Sans" rel="stylesheet">
-  </head>
-  <body>
+<%- include ../partials/header.ejs %>
+
+<div class="likes">
+  <%- include('../partials/likes-form.ejs', {value: 2}); %>
+  Likes so far: <%= likesCount %><br>
+  <a href="/"> Back to main page <i class="fas fa-home"></i></a>
+</div>
+
     <main>
   <div class="article-title"> EventListener in JS </div>
   <div class="sub-title"> On the example of getting information from a HTML form. </div>
@@ -30,7 +26,7 @@ element.addEventListener(event, function);
 Example:
 <pre><code>
 window.addEventListener("load", function (event) {
-alert("hello!")
+  alert("hello!")
 }
 </code></pre>
 
@@ -39,28 +35,27 @@ alert("hello!")
 <div class="article-section-2">  HTML </div>
 
 <pre><code>
-  < html>
-    < head>
-      < script type="text/javascript" src="notepad.js"> </script>
-    < /head>
-    < body>
-      < div class="container">
-        < form id="form">
-          < input id="note" type="textarea" name="note">
-          < input id="submit" type="submit" value="create">
-        < /form>
-        < div id="notes"> </div>
-      < /div>
-      < div id="display"> </div>
-    < /body>
-  < /html>
-
+< html>
+  < head>
+    < script type="text/javascript" src="notepad.js"> </script>
+  < /head>
+  < body>
+    < div class="container">
+      < form id="form">
+        < input id="note" type="textarea" name="note">
+        < input id="submit" type="submit" value="create">
+      < /form>
+      < div id="notes"> </div>
+    < /div>
+    < div id="display"> </div>
+  < /body>
+< /html>
 </code></pre>
 
 <div class="article-section-2">  JS </div>
 
 <pre><code>
-  function Notepad(name) {
+function Notepad(name) {
   this.content = [];
 }
 
@@ -100,38 +95,35 @@ function sendData(note) {
 
 1) We specify the first <code>event</code> - on load of the <code>window</code> we want to <code>listen</code> for actions in the whole <code>window</code>.<br>
 <pre><code>
-  window.addEventListener("load", function (event)
+window.addEventListener("load", function (event)
 </code></pre>
 2) We get an element of html - a form - and set it to a variable. This element will be of interest to us in the next step..<br>
 <pre><code>
-  var form = document.getElementById("form");
+var form = document.getElementById("form");
 </code></pre>
 3) Now we add a new <code>EventListener</code>. This time we don't want to look in the whole <code>window</code>, but only on the <code>form</code> specified in the step above. We also don't want to see events on load, but when there will be a <code>submit</code> action.
 The name of the button in the html form doesn't matter - it could be named chicken or cat. The keyword <code>submit</code> used below is specific to <code>EventListener</code> and signalises that there was a submit action, regardles of the button's name.
 <pre><code>
-  form.addEventListener("submit", function (event)
+form.addEventListener("submit", function (event)
 </code></pre>
 4) We get the value of the textarea with a 'note' id and set it to a <code>note</code> variable.
 <pre><code>
-  var note = document.getElementById('note').value;
+var note = document.getElementById('note').value;
 </code></pre>
 5) We prevent refreshing
 <pre><code>
-  event.preventDefault();
+event.preventDefault();
 </code></pre>
 6) We send the <code>note</code> retrieved from the <code>form</code> to a <code>sendData</code> method as an argument.
 <pre><code>
-  sendData(note);
+sendData(note);
 </code></pre>
 
+<div class="comments">
+  <%- include('../partials/comments-form.ejs', {value: 2}); %>
+  <%- include ../partials/comments-list.ejs %>
+</div>
+
 </main>
-<footer>
-  <div class="icons">
-    <a href="https://www.facebook.com/jzzzzzzzzzzzzzzz"><i class="fab fa-facebook-square"></i></a>
-    <a href="https://www.linkedin.com/in/justyna-zygmunt/"><i class="fab fa-linkedin"></i></a>
-    <a href="https://github.com/Kotauror"><i class="fab fa-github"></i></a>
-    <a href="https://www.codewars.com/users/Kotauror"><i class="fas fa-code"></i></a>
-  </div>
-</footer>
-  </body>
-</html>
+
+<%- include ../partials/footer.ejs %>

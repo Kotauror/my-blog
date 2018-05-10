@@ -1,0 +1,219 @@
+<%- include ../partials/header.ejs %>
+<div class="likes">
+  <%- include('../partials/likes-form.ejs', {value: 7}); %>
+  Likes so far: <%= likesCount %><br>
+<a href="/"> Back to main page <i class="fas fa-home"></i></a>
+</div>
+
+
+  <main>
+
+    <div class="article-title">Create and test basic node server connection. </div>
+    <div class="sub-title"></div>
+
+    Before you start coding:<br><br>
+
+    - initialize Node.js<br>
+    - set up Mocha testing framework<br>
+
+    <div class="article-section"> Creating a server </div>
+
+    <pre><code>
+var http = require('http');
+
+this.server = http.createServer(function (req, res) {
+    res.writeHead(200, {'Content-Type': 'text/plain'});
+    res.write('Hello World!');
+    res.end();
+}).listen(4000);
+</code></pre>
+
+<div class="article-section-2"> Analysis line by line </div>
+<pre><code>
+var http = require('http');
+</code></pre>
+Node.js has a built-in module called HTTP, which allows Node.js to transfer data over the Hyper Text Transfer Protocol (HTTP). The HTTP module can create an HTTP server that listens to server ports and gives a response back to the client.
+<pre><code>
+this.server = http.createServer(function (req, res) { } ).listen(4000)
+</code></pre>
+CreateServer() method creates an HTTP server. The server will be available on port 4000.
+<pre><code>
+res.writeHead(200, {'Content-Type': 'text/plain'});
+res.write('Hello World!');
+res.end();
+</code></pre>
+<code>res</code> is abbreviation of response. It tells what functions will be called on the response - when someone tries to access the computer on port 4000.<br><br>
+If the response from the HTTP server is supposed to be displayed as HTML, a HTTP header with the correct content type is needed (see below). The line below also tells the status code, 200 means that all is OK.
+<pre><code>
+res.writeHead(200, {'Content-Type': 'text/plain'});
+</code></pre>
+The next line tells us what we want to see on the website.
+<pre><code>
+res.write('Hello World!');
+</code></pre>
+The next line ends the response process. It is used to quickly end the response without any data.
+<pre><code>
+res.end();
+</code></pre>
+It's good to compare </code>res.end()</code> with <code>res.send()</code>, which actually sends the data. See here: https://stackoverflow.com/questions/29555290/what-is-the-difference-between-res-end-and-res-send .
+
+<div class="article-section"> Testing a server connection </div>
+
+<div class="article-section-2"> Code </div>
+
+<pre><code>
+var server = require('../lib/server');
+
+describe('server', function () {
+  before(function () {
+    server.listen(4000);
+  });
+
+  after(function () {
+    server.close();
+  });
+});
+
+var assert = require('assert'),
+    http = require('http');
+
+describe('/', function () {
+  it('should return 200', function (done) {
+    http.get('http://localhost:4000', function (res) {
+      assert.equal(200, res.statusCode);
+      done();
+    });
+  });
+
+  it('should say "Hello, world!"', function (done) {
+    http.get('http://localhost:4000', function (res) {
+      var data = '';
+
+      res.on('data', function (chunk) {
+        data += chunk;
+      });
+
+      res.on('end', function () {
+        assert.equal('Hello World!', data);
+        done();
+      });
+    });
+  });
+});
+</code></pre>
+
+<div class="article-section-2"> Analysis line by line </div>
+
+Require the tested file
+<pre><code>
+var server = require('../lib/server');
+</code></pre>
+Open and close the server for the purpose of the test.
+<pre><code>
+describe('server', function () {
+  before(function () {
+    server.listen(4000);
+  });
+
+  after(function () {
+    server.close();
+  });
+});
+</code></pre>
+However, in case of my code this logic in not needed, as I did the .listen(4000) in the server.js file. I paste this here anyway for future uses :)
+<pre><code>
+var assert = require('assert'),
+</code></pre>
+The assert module provides a simple set of assertion tests that can be used to test invariants.
+<pre><code>
+http = require('http');
+</code></pre>
+As above - built-in module of Node.js, which allows Node.js to transfer data over the Hyper Text Transfer Protocol (HTTP).
+<pre><code>
+describe('/', function () { } )
+</code></pre>
+This part of test refers to localhost:4000/ - the root page (/)
+<pre><code>
+it('should return 200', function (done) {
+  http.get('http://localhost:4000', function (res) {
+    assert.equal(200, res.statusCode);
+    done();
+  });
+});
+</code></pre>
+- In this test we check if the / was succesfully loaded.<br>
+- done is a callback that we need to call once we are done with our work.<br>
+- we go to http://localhost:4000 server with the get method and check if the status of the response equals 200.<br>
+- once this assertion will be ready, done() will be called.<br>
+- In out case done does nothing and so it could be deleted:<br>
+<pre><code>
+  it('should return 200', function () {
+    http.get('http://localhost:4000', function (res) {
+      assert.equal(200, res.statusCode);
+      // done();
+    });
+  });
+</code></pre>
+It may be useful if the future though, if we want to do some action after the assertion is finished. Because of this fact, it will leave <code>done()</code> in my code.<br>
+To see what how the <code>done()</code> is working, we can pass it console.log("test") as an argument, and see it displayed in the console.
+<pre><code>
+it('should say "Hello, world!"', function (done) {
+  http.get('http://localhost:4000', function (res) {
+    var data = '';
+
+    res.on('data', function (chunk) {
+      data += chunk;
+    });
+
+    res.on('end', function () {
+      assert.equal('Hello World!', data);
+      done();
+    });
+  });
+});
+</code></pre>
+This part of the test checks if "Hello world!" appears when we visit /.<br><br>
+
+We again do the <code>done()</code> callback.<br>
+
+We again go to the server with the get method.<br>
+
+We set the variable data to be an empty string - ''. We are leter going to add data from the website to this string. If were to write: var data = 'chicken' our future test woulde add the data from the website to the chicken.<br>
+
+<code>res.on('data')</code> is called when there's a chunk of data. There is data, as we wrote it in the server file:<br>
+<pre><code>
+res.write('Hello World!'); // see above in the Creation of server
+</code></pre>
+If this line weren't there, <code>res.on('data')</code> wouldn't be called. You can check it by:<br>
+- console.logging "cat" inside of <code>res.on('data')</code><br>
+-  the res.write('Hello World!') line from server.js<br><br>
+If there is data on /, we:<br>
+- call it <code>chunk</code><br>
+- add this <code>chunk</code> to the empty string created above.<br><br>
+Then we check if the data from the website is equal to what we expect to see, which is <code>Hello World!</code>.<br>
+The code above can be made clearer by changing the name of data variable in the following way:<br>
+<pre><code>
+it('should say "Hello, world!"', function (done) {
+http.get('http://localhost:4000', function (res) {
+  var dataToCheckWith = '';
+
+  res.on('data', function (chunk) {
+    dataToCheckWith += chunk;
+  });
+
+  res.on('end', function () {
+    assert.equal('Hello World!', dataToCheckWith);
+    done();
+  });
+});
+});
+</code></pre>
+
+<div class="comments">
+  <%- include('../partials/comments-form.ejs', {value: 7}); %>
+  <%- include ../partials/comments-list.ejs %>
+</div>
+
+</main>
+
+  <%- include ../partials/footer.ejs %>
