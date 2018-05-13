@@ -17,5 +17,9 @@
     "pg": "^7.4.3",
     "pg-hstore": "^2.3.2",
     "sequelize": "^4.37.6"
+  },
+  "engines": {
+    "node": "^9.5.0",
+    "sequelize": "^4.37.6"
   }
 }
