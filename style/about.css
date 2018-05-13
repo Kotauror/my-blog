@@ -21,6 +21,8 @@ html, body {
 .me_container:hover {
   /* background-image: url("https://image.ibb.co/b2rhBJ/Zrzut_ekranu_2018_05_13_o_19_47_50.png") */
   background-image: url("https://image.ibb.co/gFHB5d/Zrzut_ekranu_2018_05_13_o_19_50_52.png");
+  background-size: cover;
+  background-position: center;
 }
 
 
