@@ -7,7 +7,7 @@ html, body {
 }
 
 header {
-  height: 8em;
+  height: 9em;
   background-color: #00D2C7;
   text-align: center;
   color: #f4f4f4;
@@ -76,4 +76,8 @@ p2 {
 
 p3 {
   font-size: 0.9em;
+}
+
+.fa-star, .fa-star-half  {
+  font-size: 1em !important;
 }
