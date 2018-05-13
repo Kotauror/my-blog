@@ -3,13 +3,38 @@ html, body {
   position: relative;
 }
 
-.me {
+.me_container {
+  margin-top: 4em;
+  height: 10em;
+  height: 12em;
+  width: 12em;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+  border-radius: 10em;
+  background-image: url("https://image.ibb.co/cPcm67/meeee.png");
+  background-position: right;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.me_container:hover {
+  /* background-image: url("https://image.ibb.co/b2rhBJ/Zrzut_ekranu_2018_05_13_o_19_47_50.png") */
+  background-image: url("https://image.ibb.co/gFHB5d/Zrzut_ekranu_2018_05_13_o_19_50_52.png");
+}
+
+
+/* .me {
   padding-top: 4em;
   border-radius: 10em;
   width: 13%;
   margin-left: auto;
   margin-right: auto;
   display: block;
+} */
+
+.me:hover {
+  visibility: hidden;
 }
 
 .main-me-description {
