@@ -1,4 +1,5 @@
 const express = require('express');
+app.use('/bower_components',  express.static(__dirname + '/bower_components'));
 const Like = require('./models/like.js');
 const LikesController = require('./controllers/likes.js');
 const app = express();
