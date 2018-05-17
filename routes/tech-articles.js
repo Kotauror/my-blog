@@ -61,4 +61,12 @@ module.exports = function(app) {
     })
   })
 
+  app.get('/tech-articles/run-java', function(req, res) {
+    likesController.count(9).then(function(likesCount) {
+      commentsController.list(9).then(function(comments) {
+      res.render('tech-articles/run-java', {likesCount: likesCount, comments: comments});
+      })
+    })
+  })
+
 }

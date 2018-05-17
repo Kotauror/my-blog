@@ -1,0 +1,196 @@
+<%- include ../partials/header.ejs %>
+<div class="likes">
+  <%- include('../partials/likes-form.ejs', {value: 9}); %>
+  Likes so far: <%= likesCount %><br>
+<a href="/"> Back to main page <i class="fas fa-home"></i></a>
+</div>
+
+
+  <main>
+
+    <div class="article-title">Setting up Java project with a JUnit testing framework</div>
+    <div class="sub-title">IntelliJ and Gradle explained.</div>
+
+
+    <div class="article-section"> Learning Java </div>
+
+    I write this note after three days of learning Java and so before I start with technical stuff, I would like to share my experiences with learning this language.<br>
+    Java is my third (after Ruby and C#) backend-specific language that I’ve started to learn. <br>
+    I'm not good at C# (I've spent maybe 3-4 days doing it), but still the knowledge of how it works made it much much easier to kick off wich Java pretty smoothly.<br>
+    After a day and a half, I kind of felt like:
+
+    <img src="https://i.imgflip.com/2afzdj.jpg" width="100%">
+    <div class="photo-data">Then show me!</div>
+
+    Then - of course - some problems started - the error messages weren't explicit, picking right identifiers wasn't always clear to me,
+    putting public in front of a piece code doesn't actually make it available in all of the places as many tutorials say and finally my personal favourite problem - using <code>ArrayList</code> is far less straight-forward than using Ruby-like arrays.<br>
+    Apart from that Java seemed friendly and I guess we will like each other :) <br><br>
+
+    I've approached learning Java in the same way that I approach all other languages that I learned before - by doing extensive tutorials. Patiently going through the often lenghty lessons (I usually use udemy courses) and each time trying to reproduce the code on my own. <br>
+    Doing tutorials before starting with katas/other tasks eats a lot of time but has its advantages- the knowledge is more structured, you can see a bigger picture, know some design patterns, and have theoretical knowledge of how it all works behind the scenes.<br>.
+    I totally recommend it if you have time to do it. <br><br>
+
+    After doing the tutorial I usually learn how to setup a simple project with a testing framework, test a simple app and then start with katas.<br><br>
+
+    I think that's it, let's take a look at running Java programs.
+    <img src="http://bloody-disgusting.com/wp-content/uploads/2017/02/twin-peaks.gif" width="100%">
+    <div class="photo-data">Oh Dale....</div>
+
+    <div class="article-section"> Introduction </div>
+
+    Running Java programs is much different from running Ruby - my strongest programming language. The reason for it is because Ruby is an interpreted scripting language, while Java is a compiled programming language. <br>
+    (Btw. it's funny how people argue if scripting languages are "true" programing languages - it's like tabs vs spaces fractions). <br>
+    In practice it means that Ruby is run directly without an explicit compilation step and generating the byte code. You can run Ruby soon as you write something meaningful. <br>
+    For example, a ruby file helloWorld.rb may be run only with the following command:
+<pre><code>
+$ ruby helloWorld.rb
+</code></pre>
+
+Java programs, unlike Ruby apps, are required to be compiled before running. For example, a Java program helloWorld.java needs to be first compiled using the javac compiler:
+
+<pre><code>
+$ javac helloWorld.java
+</code></pre>
+The javac compiler generates the byte code for the Java class, understandable for the Java Virtual Machine. As a result, we get files named according to class names with a <code>.class</code> extension.
+The compiled class may be run with the java.exe application.
+<pre><code>
+$ java helloWorld // no need to write the .class extension
+</code></pre>
+In case of many <code>.class</code> files, we run the file which has a <code>main</code> method.
+
+Compiled programs in Java run faster than interpreted programs in Ruby because they are first converted into byte code, which apparently is easier to run for the machine that a higher-level code.<br>
+It's totally logical - we do the compiling step first and then run it, while in case of scripting languages compiling "counts" into the running time. <br>
+Also, compilers read and analyze the code only once, and report the errors collectively that the code might have, but the interpreter will read and analyze the code statements each time it meets them and halts at that very instance if there is some error.
+It might be really helpfull with debugging when you don't have tests (BUT YOU SHOULD!) - you get all errors at once.<br><br>
+
+Sound good, doesn't it? But there is a price to this happiness - running Java programs with test suits is harder as it requires this additional - compiler - step.<br>
+Thankfully there are nice tools that help to manage and run Java files: IntelliJ and Gradle, that I’m going to talk about below.
+
+<div class="article-section"> Running Java programs using Gradle + VIM </div>
+
+This way doesn't require any fancy IDE (like IntelliJ - described below) - you can literally write a code in VIM and build the files structure using Gradle - a build system.<br><br>
+Gradle is an automation tool - a software that makes building software faster. <br>
+It: helps to create the whole files structure and then allows you to run a variety of tasks on your code.
+
+<img src="https://image.ibb.co/f6dk5d/Screen_Shot_2018_05_17_at_11_36_21.png" width="100%">
+<div class="photo-data">Tasks available in my coinChanger project</div>
+
+In this note I'll be focused on a basic build task that assembles and tests a project. Below is the whole process step by step. <br><br>
+
+1. Install gradle.
+<pre><code>
+$ brew install gradle  // on mac, using Homebrew
+</code></pre>
+2. Create a project folder.
+<pre><code>
+$ mkdir <name>
+</code></pre>
+3. Enter the project folder.
+<pre><code>
+$ cd <name>
+</code></pre>
+4. Initialize Gradle application.
+<pre><code>
+$ gradle init --type java-application
+</code></pre>
+5. Inspect the file structure created for you by Gradle.
+<img src="https://image.ibb.co/iLQF5d/Screen_Shot_2018_05_17_at_11_42_27.png" width="100%">
+- The Gradle folder is a wrapper for files - it has a crucial executable <code>.jar</code> file, where the wrapper code resides. What is a wrapper you ask?<br>
+It invokes Gradle to run the specified tasks (you run tasks using <code>gradlew</code> command - see the top on the tasks picture above).<br>
+- Default Java source folder <br>
+- Default Java test folder<br>
+6. What is nice, the src mai nand test folders contain some sample code and you can see the app running and tested by executing.
+<pre><code>
+$ ./gradlew build in the root.
+</code></pre>
+7. You can see the output of tests by entering:
+<pre><code>
+$ open build/reports/tests/test/index.html
+</code></pre>
+8. Then all you need to do is to delete the default code and write your own app!
+
+<div class="article-section"> Running Java programs using IntelliJ </div>
+
+IntelliJ is IDE that works perfectly with Java programs, but can be used to write in other languages as well. Using IntelliJ allows you to run all of the commands through IDE,
+without the need of using command line commands. Below you can find a step-by-step tutorial on how to setup a project with testing framework using IntelliJ. <br><br>
+
+<div class="article-section-2"> Basic setup </div>
+
+1. Install and open IntelliJ.<br>
+2. Pick File -> new -> Project.<br>
+3. In the left-hand pane select Java.<br>
+4. Specify JDK.<br>
+(I’ve skipped using template);<br>
+5. Name your project.<br><br>
+
+Now we have two top-level nodes:<br><br>
+
+- /projectName/ - This node represents the Java module. <br>
+  * The .idea folder and the file /projectName/.iml are used to store configuration data for the project. <br>
+  * The folder src is for the source code. <br>
+- External Libraries. This is a category that represents all the "external" resources necessary for development work. THis is a place where the .jar files that make up JDK are located. <br><br>
+
+<div class="article-section-2">  Creating a class in src folder </div>
+
+6. As said above, in the the /projectName/ folder there is an src folder. In this folder we’re going to create our class, that we will later test. I’ve created <code>MyClass</code> class with the following content:<br>
+
+<pre><code>
+public class MyClass {
+
+   public int multiply(int a, int b){
+       return a * b;
+   }
+}
+</code></pre>
+
+<div class="article-section-2">  Creating a test in test folder </div>
+
+7. On the same lever as the src, we create a test directory. I’ve named it test. <br>
+8. Then I’ve right-clicked on the test folder and picked "Mark Directory As > Test Source Root". <br>
+13. Right-click on test folder to create a new class ("New > Java Class"). My class will be called <code>MyTests</code>.
+14. The content of the MyTests file:
+
+<pre><code>
+import org.junit.Assert;
+import org.junit.Test;
+
+public class MyTests {
+
+   @Test
+   public void multiplicationOfZeroIntegersShouldReturnZero() {
+       MyClass tester = new MyClass(); // MyClass is tested
+
+//        // assert statements
+       Assert.assertEquals(0, tester.multiply(10, 0));
+       Assert.assertEquals(0, tester.multiply(0, 10));
+       Assert.assertEquals(0, tester.multiply(0, 0));
+   }
+
+   @Test
+   public void firstTest() {
+       Assert.assertTrue(true);
+   }
+}
+</code></pre>
+
+This test test file contains 2 test methods (start with @Test) and 4 assertions. <br>
+On the top we import Assert and Test classes. <br>
+<code>assertEquals</code> is a static method. Since you can't use static methods without importing them explicitly in a static way, you have to use <code>Assert.assertEquals(...)</code>
+
+<div class="article-section-2"> Adding JUnit library </div>
+
+15. Go to File > Project Structure;
+16. Go to the "Libraries" group, click the plus in up-left corner, and choose "From Maven...".
+17. Pick the newest release of "junit".
+18. Right-click on your test folder and choose "Run 'All Tests'".
+
+<img src="https://media3.giphy.com/media/48FhEMYGWji8/giphy.gif" width="100%">
+
+<div class="comments">
+  <%- include('../partials/comments-form.ejs', {value: 9}); %>
+  <%- include ../partials/comments-list.ejs %>
+</div>
+
+</main>
+
+  <%- include ../partials/footer.ejs %>
