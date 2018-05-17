@@ -8,7 +8,7 @@
 
   <main>
 
-    <div class="article-title">Setting up Java project with a JUnit testing framework</div>
+    <div class="article-title">Setting up a Java project with a JUnit testing framework</div>
     <div class="sub-title">IntelliJ and Gradle explained.</div>
 
 
@@ -23,7 +23,7 @@
     <div class="photo-data">Then show me!</div>
 
     Then - of course - some problems started - the error messages weren't explicit, picking right identifiers wasn't always clear to me,
-    putting public in front of a piece code doesn't actually make it available in all of the places as many tutorials say and finally my personal favourite problem - using <code>ArrayList</code> is far less straight-forward than using Ruby-like arrays.<br>
+    putting public in front of a piece code doesn't actually make it available in all of the places as many tutorials say and finally my personal favourite problem - using <code>ArrayList</code> is far less straightforward than using Ruby-like arrays.<br>
     Apart from that Java seemed friendly and I guess we will like each other :) <br><br>
 
     I've approached learning Java in the same way that I approach all other languages that I learned before - by doing extensive tutorials. Patiently going through the often lenghty lessons (I usually use udemy courses) and each time trying to reproduce the code on my own. <br>
@@ -38,8 +38,7 @@
 
     <div class="article-section"> Introduction </div>
 
-    Running Java programs is much different from running Ruby - my strongest programming language. The reason for it is because Ruby is an interpreted scripting language, while Java is a compiled programming language. <br>
-    (Btw. it's funny how people argue if scripting languages are "true" programing languages - it's like tabs vs spaces fractions). <br>
+    Running Java programs is much different from running Ruby - my strongest programming language. The reason for it is because Ruby is an interpreted scripting language, while Java is a compiled programming language <i>(btw. it's funny how people argue if scripting languages are "true" programing languages - it's like tabs vs spaces fractions). </i><br>
     In practice it means that Ruby is run directly without an explicit compilation step and generating the byte code. You can run Ruby as soon as you write any executable code. <br><br>
     For example, a ruby file helloWorld.rb may be run only with the following command:
 <pre><code>
@@ -56,19 +55,18 @@ The compiled class may be run with the java.exe application.
 <pre><code>
 $ java helloWorld // no need to write the .class extension
 </code></pre>
-In case of many <code>.class</code> files, we run the file which has a <code>main</code> method.
+In case of many <code>.class</code> files, we run the file which has a <code>main</code> method.<br><br>
 
 Compiled programs in Java run faster than interpreted programs in Ruby because they are first converted into byte code, which apparently is easier to run for the machine that a higher-level code. It's totally logical - we do the compiling step first and then run it, while in case of scripting languages compiling "counts" into the running time. <br>
 <br>Also, compilers read and analyze the code only once, and report the errors collectively that the code might have, but the interpreter will read and analyze the code statements each time it meets them and halts at that very instance if there is some error.
-It might be really helpfull with debugging when you don't have tests (BUT YOU SHOULD!) - you get all errors at once.<br><br>
+It might be really helpfull with debugging when you don't have tests (BUT YOU SHOULD!).<br><br>
 
-Sound good, doesn't it? But there is a price to this happiness - running Java programs with test suits is harder as it requires this additional - compiler - step.<br>
-Thankfully there are nice tools that help to manage and run Java files: IntelliJ and Gradle, that I’m going to talk about below.
+Sound good, doesn't it? But there is a price to this happiness - running Java programs with test suits is harder as it requires this additional - compiler - step. Thankfully there are nice tools that help to manage and run Java files: IntelliJ and Gradle, that I've discussed below.
 
 <div class="article-section"> Running Java programs using Gradle + VIM </div>
 
-This way of running Java programs doesn't require any fancy IDE (like IntelliJ described below) - you can literally write a code in VIM and build the files structure using Gradle - a build system.<br><br>
-Gradle is an automation tool - a software that makes building software faster. It helps to create the whole files structure and then allows you to run a variety of tasks on your code.
+This way of running Java programs doesn't require any fancy IDE (like IntelliJ described below) - you can literally write a code in VIM and build the file structure using Gradle - a build system.<br><br>
+Gradle is an automation tool - a software that makes building software faster. It helps to create the file structure and then allows you to run a variety of tasks on your code (see the <code>gradle tasks</code> command).
 
 <img src="https://image.ibb.co/f6dk5d/Screen_Shot_2018_05_17_at_11_36_21.png" width="100%">
 <div class="photo-data">Tasks available in my coinChanger project</div>
@@ -81,11 +79,11 @@ $ brew install gradle  // on mac, using Homebrew
 </code></pre>
 2. Create a project folder.
 <pre><code>
-$ mkdir <name>
+$ mkdir nameOfProject
 </code></pre>
 3. Enter the project folder.
 <pre><code>
-$ cd <name>
+$ cd nameOfProject
 </code></pre>
 4. Initialize Gradle application.
 <pre><code>
@@ -93,11 +91,11 @@ $ gradle init --type java-application
 </code></pre>
 5. Inspect the file structure created for you by Gradle.
 <img src="https://image.ibb.co/iLQF5d/Screen_Shot_2018_05_17_at_11_42_27.png" width="100%">
+There are two folders:<br>
 - The Gradle folder is a wrapper for files - it has a crucial executable <code>.jar</code> file, where the wrapper code resides. What is a wrapper you ask?<br>
 It invokes Gradle to run the specified tasks (you run tasks using <code>gradlew</code> command - see the top on the tasks picture above).<br>
-- Default Java source folder <br>
-- Default Java test folder<br>
-6. What is nice, the src and test folders contain some sample code and you can see the app running and tested by executing.
+- src folder with main and test directories. <br>
+6. What is nice, the main and test folders contain some sample code and you can see the app running and tested by executing.
 <pre><code>
 $ ./gradlew build // in the root of the project
 </code></pre>
@@ -181,6 +179,7 @@ public class MyTests {
 16. Go to the "Libraries" group, click the plus in up-left corner, and choose "From Maven...".<br>
 17. Pick the newest release of "junit".<br>
 18. Right-click on your test folder and choose "Run 'All Tests'".<br>
+19. See them passing!
 
 <img src="https://media3.giphy.com/media/48FhEMYGWji8/giphy.gif" width="100%">
 
