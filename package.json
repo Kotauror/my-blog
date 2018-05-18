@@ -1,7 +1,6 @@
 {
   "name": "blog",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
     "start": "node app.js"
@@ -23,5 +22,15 @@
   "engines": {
     "node": "^9.5.0",
     "sequelize": "^4.37.6"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kotauror/my-blog.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Kotauror/my-blog/issues"
+  },
+  "homepage": "https://github.com/Kotauror/my-blog#readme",
+  "description": ""
 }

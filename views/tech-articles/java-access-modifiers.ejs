@@ -1,0 +1,207 @@
+<%- include ../partials/header.ejs %>
+<div class="likes">
+  <%- include('../partials/likes-form.ejs', {value: 10}); %>
+  Likes so far: <%= likesCount %><br>
+<a href="/"> Back to main page <i class="fas fa-home"></i></a>
+</div>
+
+
+  <main>
+
+    <div class="article-title">Java Access modifiers</div>
+    <div class="sub-title"></div>
+
+
+    <div class="article-section"> Introduction </div>
+
+
+    Modifiers in Java are keywords that we add to the definitions to change their meanings. Modifiers are included in definitions of classes, methods, or variables. The modifier precedes the rest of the statement, for example:
+<pre><code>
+public class App {
+}
+
+public static void main(String[] args) {
+}
+
+private boolean flag;
+</code></pre>
+
+<br>
+There are two main groups of modifiers:<br>
+* Access modifiers - specify accessibility (scope) of data <br>
+* Non-access modifiers - other functionalities. <br><br>
+
+In this note I’ll focus myself on access modifiers. <br><br>
+There are four types of access modifiers:<br>
+- Public <br>
+- Protected<br>
+- Default<br>
+- Private<br>
+
+The table below illustrates the modification of scope by particular modifier.
+<img src="https://www.programcreek.com/wp-content/uploads/2011/11/access-level.png" width="100%">
+<div class="photo-data">Made by www.programcreek.com</div>
+
+Below I'll describe access modifiers on examples, starting with the ones offering the widest scope.
+
+<div class="article-section"> Public access modifier </div>
+
+A class, method, constructor, interface, etc. declared public can be accessed from any other class.
+However, if the public class we are trying to access is in a different package, then the public class still needs to be imported.
+Classess are always public. <br><br>
+Let's take a look at an example: <br><br>
+We have three files (three classess) in two packages. <br>
+A Test class in packagetraining package:<br>
+<pre><code>
+package com.example.packagetraining;  // name of package
+class Test {
+    static int a = 10;
+}
+</code></pre>
+A PackageTraining class in packagetraining package:
+<pre><code>
+package com.example.packagetraining; // name of package
+import com.example.additionals.Additionals;  // imported package
+public class PackageTraining {
+    public static void main(String[] args) {
+        System.out.println(Test.a);
+        System.out.println(Additionals.b);
+    }
+}
+</code></pre>
+As you see, the <code>PackageTraining</code> class prints out a <code>int a</code> from <code>Test</code> class and <code>int b</code> from <code>Additionals</code> class.
+The <code>Test</code> class has no access modifier - so the access is default. It means that this class will be visible across the <code>packagetraining</code> package.
+Because <code>Test</code> and <code>PackageTraining</code> are in the same package (<code>packagetraining</code>), we can print the <code>int a</code> of <code>Test</code> inside of <code>PackageTraining</code> <code>main</code> method.
+The <code>main</code> method of <code>PackageTraining</code> also prints <code>int b</code> of <code>Additionals</code>. Because of the fact, that <code>Additionals</code> is a public class, we can use it globally.
+However, because it’s in a different package, we need to import it (see <code>PackageTraining</code> class above).
+
+<div class="article-section-2"> main() Method </div>
+
+In the Java programming language, every application must contain a <code>main</code> method - it's an entry point for any application and will subsequently invoke all the other methods required by the program.
+The <code>main()</code> method of an application has to be public. Otherwise, it could not be called by a Java interpreter (such as java) to run the class. The main method signature is:
+<pre><code>
+public static void main(String[] args)
+</code></pre>
+
+<div class="article-section"> Protected Access Modifier </div>
+
+The protected access modifier is accessible within package and outside the package but through inheritance only.<br><br>
+
+The protected access modifier cannot be applied to class and interfaces.
+Methods, fields can be declared protected, however methods and fields in a interface cannot be declared protected.<br><br>
+
+In the example below we have two packages: mypack and otherpack.<br><br>
+
+Mypack package: <br><br>
+
+<pre><code>
+package mypack;
+
+public class A {
+   protected void msg(){System.out.println("Hello");}
+   A obja = new A();
+}
+</code></pre>
+<br>
+Otherpackpackage: <br><br>
+
+<pre><code>
+package otherpack;
+import mypack.*;
+
+public class B {
+   public static void main(String args[]){
+       B obj = new B();
+       obja.msg();
+   }
+}
+</code></pre>
+First of all, because these are two different packages, we need to import <code>mypack</code> inside of <code>otherpack</code>, which tries to use <code>msg()</code> method from <code>mypack</code>.<br><br>
+
+We can’t run the <code>msg()</code> method on instance of A (<code>obja</code>), because of the protected access.<br>
+However, we can potentially run it on an instance of B (<code>obj</code>). All we need to do in order to achieve it, is add inheritance, meaning change the line:
+<pre><code>
+public class B {
+</code></pre>
+into
+<pre><code>
+public class B extends A {
+</code></pre>
+and
+<pre><code>
+obja.msg();
+</code></pre>
+into
+<pre><code>
+obj.msg();
+</code></pre>
+
+<div class="article-section"> Default Access Modifier </div>
+
+If you don't use any modifier, it is treated as default. The default modifier is accessible only within package.
+
+In the example below we have two packages:
+
+<pre><code>
+package mypackage;
+
+public class A {
+   void msg(){System.out.println("Hello");}
+}
+</code></pre>
+
+and
+<pre><code>
+package otherpackage;
+import mypackage.*;
+
+
+public class B {
+   public static void main(String args[]){
+       A obj = new A();//Compile Time Error
+       B object = new B();
+       obj.msg();//Compile Time Error
+       object.msg();
+   }
+}
+</code></pre>
+Neither can we create a new instance of A inside of <code>main</code> and call a <code>msg()</code> method on it, nor can we create an instance of B and call <code>msg()</code> method on in because of two different packages.
+
+<div class="article-section"> Private Access Modifier </div>
+
+The last kind of access modifier is <code>private</code> - it makes the particular piece of code accessible only within the class. A class cannot be private.
+
+In the example below we have two classess within the same package:
+
+<pre><code>
+class A {
+   private int data=40;
+   private void msg(){System.out.println("Hello java");}
+}
+</code></pre>
+
+And
+
+<pre><code>
+public class B {
+   public static void main(String args[]){
+       A obj=new A();
+       System.out.println(obj.data);//Compile Time Error
+       obj.msg();//Compile Time Error
+   }
+}
+</code></pre>
+
+In the <code>main()</code> method of B class, we can create a new instance of A (object),
+because class A is public and they are both in the same package.
+However, we cannot print <code>obj.data</code> or call <code>msg()</code> method on <code>obj</code>, because both <code>data</code> and <code>msg()</code> are private and therefore available only within the A class.
+
+
+<div class="comments">
+  <%- include('../partials/comments-form.ejs', {value: 10}); %>
+  <%- include ../partials/comments-list.ejs %>
+</div>
+
+</main>
+
+  <%- include ../partials/footer.ejs %>

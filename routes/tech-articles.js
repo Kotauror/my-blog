@@ -69,4 +69,12 @@ module.exports = function(app) {
     })
   })
 
+  app.get('/tech-articles/java-access-modifiers', function(req, res) {
+    likesController.count(10).then(function(likesCount) {
+      commentsController.list(10).then(function(comments) {
+      res.render('tech-articles/java-access-modifiers', {likesCount: likesCount, comments: comments});
+      })
+    })
+  })
+
 }
