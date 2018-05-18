@@ -170,9 +170,6 @@ Neither can we create a new instance of A inside of <code>main</code> and call a
 <div class="article-section"> Private Access Modifier </div>
 
 The last kind of access modifier is <code>private</code> - it makes the particular piece of code accessible only within the class. A class cannot be private.
-Private should be applied when we want to be albe to modify certaing things only within one class.<br>
-Imagine a bank app having many classess eg. Interface (displayer) and Account. <br>
-We don't want to be able to modity the balance from the displayer, but only from the account, once we check if the persone gave right password etc.<br>
 
 In the example below we have two classess within the same package:
 
@@ -198,6 +195,85 @@ public class B {
 In the <code>main()</code> method of B class, we can create a new instance of A (object),
 because class A is public and they are both in the same package.
 However, we cannot print <code>obj.data</code> or call <code>msg()</code> method on <code>obj</code>, because both <code>data</code> and <code>msg()</code> are private and therefore available only within the A class.
+
+<div class="article-section-2"> Using get and set instead in encapsulation when using private modifier </div>
+
+Private should be applied when we want to be albe to modify certaing things only within one class.<br>
+Imagine a bank app having many classess eg. Interface (displayer) and Account. <br>
+We don't want to be able to modity the balance from the displayer, but only from the account, once we check if the persone gave right password etc.<br>
+Let's see a practical example. <br><br>
+
+There are two classess: Encapculating and Banking, both in the same package. <br>
+In the code below we didn't use private access modifier. Because of this fact, balance can be edited not only in the Banking class, but also in Encapsulating class.<br><br>
+Banking class:
+
+<pre><code>
+package encapsulation;
+
+public class Banking {
+
+    Banking() {
+        balance = 1000;
+    }
+
+    int balance;
+}
+</code></pre>
+
+Encapsulating class:
+
+<pre><code>
+package encapsulation;
+
+public class Encapsulating {
+
+  public static void main(String[] args) {
+      Banking justysiowe = new Banking();
+      System.out.println(justysiowe.balance);
+      justysiowe.balance = 10000000;
+      System.out.println(justysiowe.balance);
+  }
+}
+</code></pre>
+
+As the output we got:
+<pre><code>
+1000
+10000000
+</code></pre>
+
+In order to prevent it, we should apply private access modifier to the balance and create a getBalance() method that will allow to read the balance,
+but not to modify it.
+
+<pre><code>
+package encapsulation;
+
+public class Banking {
+
+    Banking() {
+        balance = 1000;
+    }
+
+    private int balance;
+
+    int getBalance() {
+        return balance;
+    }
+}
+</code></pre>
+
+<pre><code>
+package encapsulation;
+
+public class Encapsulating {
+
+    public static void main(String[] args) {
+
+        Banking justysiowe = new Banking();
+        System.out.println(justysiowe.getBalance());
+    }
+}
+</code></pre>
 
 
 <div class="comments">
