@@ -17,13 +17,12 @@
 
     Modifiers in Java are keywords that we add to the definitions to change their meanings. Modifiers are included in definitions of classes, methods, or variables. The modifier precedes the rest of the statement, for example:
 <pre><code>
-public class App {
+public class App   // public modifier
 }
 
-public static void main(String[] args) {
+public static void main(String[] args) { // public, static, void modifiers
 }
 
-private boolean flag;
 </code></pre>
 
 <br>
@@ -36,29 +35,27 @@ There are four types of access modifiers:<br>
 - Public <br>
 - Protected<br>
 - Default<br>
-- Private<br>
+- Private<br><br>
 
-The table below illustrates the modification of scope by particular modifier.
+The table below illustrates the scope of data having a particular modifier.
 <img src="https://www.programcreek.com/wp-content/uploads/2011/11/access-level.png" width="100%">
 <div class="photo-data">Made by www.programcreek.com</div>
 
-Below I'll describe access modifiers on examples, starting with the ones offering the widest scope.
-
 <div class="article-section"> Public access modifier </div>
 
-A class, method, constructor, interface, etc. declared public can be accessed from any other class.
+A class, method, constructor, interface, etc. declared public can be accessed from any other class (globally, world scope).
 However, if the public class we are trying to access is in a different package, then the public class still needs to be imported.
-Classess are always public. <br><br>
+Classes are always public. <br><br>
 Let's take a look at an example: <br><br>
 We have three files (three classess) in two packages. <br>
-A Test class in packagetraining package:<br>
+A <code>Test</code> class in <code>packagetraining</code> package:<br>
 <pre><code>
 package com.example.packagetraining;  // name of package
 class Test {
     static int a = 10;
 }
 </code></pre>
-A PackageTraining class in packagetraining package:
+A <code>PackageTraining</code> class in <code>packagetraining</code> package:
 <pre><code>
 package com.example.packagetraining; // name of package
 import com.example.additionals.Additionals;  // imported package
@@ -69,15 +66,23 @@ public class PackageTraining {
     }
 }
 </code></pre>
+An <code>Additionals</code> class in <code>additionals</code> package:
+<pre><code>
+Package com.example.additionals; // name of package
+public class Additionals {
+    public static int b = 100;
+}
+</code></pre>
+
 As you see, the <code>PackageTraining</code> class prints out a <code>int a</code> from <code>Test</code> class and <code>int b</code> from <code>Additionals</code> class.
 The <code>Test</code> class has no access modifier - so the access is default. It means that this class will be visible across the <code>packagetraining</code> package.
 Because <code>Test</code> and <code>PackageTraining</code> are in the same package (<code>packagetraining</code>), we can print the <code>int a</code> of <code>Test</code> inside of <code>PackageTraining</code> <code>main</code> method.
-The <code>main</code> method of <code>PackageTraining</code> also prints <code>int b</code> of <code>Additionals</code>. Because of the fact, that <code>Additionals</code> is a public class, we can use it globally.
+The <code>main</code> method of <code>PackageTraining</code> also prints <code>int b</code> of <code>Additionals</code>. Because of the fact that <code>Additionals</code> is a public class, we can use it globally.
 However, because it’s in a different package, we need to import it (see <code>PackageTraining</code> class above).
 
 <div class="article-section-2"> main() Method </div>
 
-In the Java programming language, every application must contain a <code>main</code> method - it's an entry point for any application and will subsequently invoke all the other methods required by the program.
+In the Java programming language, every application must contain a <code>main</code> method - it's an entry point for any application and will subsequently invoke all the other methods required by the program.<br><br>
 The <code>main()</code> method of an application has to be public. Otherwise, it could not be called by a Java interpreter (such as java) to run the class. The main method signature is:
 <pre><code>
 public static void main(String[] args)
@@ -90,9 +95,9 @@ The protected access modifier is accessible within package and outside the packa
 The protected access modifier cannot be applied to class and interfaces.
 Methods, fields can be declared protected, however methods and fields in a interface cannot be declared protected.<br><br>
 
-In the example below we have two packages: mypack and otherpack.<br><br>
+In the example below we have two packages: <code>mypack</code> and <code>otherpack</code>.<br><br>
 
-Mypack package: <br><br>
+<code>Mypack</code> package: <br><br>
 
 <pre><code>
 package mypack;
@@ -103,7 +108,7 @@ public class A {
 }
 </code></pre>
 <br>
-Otherpackpackage: <br><br>
+<code>Otherpackpackage</code> package: <br><br>
 
 <pre><code>
 package otherpack;
@@ -196,9 +201,9 @@ In the <code>main()</code> method of B class, we can create a new instance of A 
 because class A is public and they are both in the same package.
 However, we cannot print <code>obj.data</code> or call <code>msg()</code> method on <code>obj</code>, because both <code>data</code> and <code>msg()</code> are private and therefore available only within the A class.
 
-<div class="article-section-2"> Using get and set instead in encapsulation when using private modifier </div>
+<div class="article-section-2"> Using getter and encapsulation when using private modifier </div>
 
-Private should be applied when we want to be albe to modify certaing things only within one class.<br>
+Private should be applied when we want to be able to modify certaing things only within one class.<br>
 Imagine a bank app having many classess eg. Interface (displayer) and Account. <br>
 We don't want to be able to modity the balance from the displayer, but only from the account, once we check if the persone gave right password etc.<br>
 Let's see a practical example. <br><br>
