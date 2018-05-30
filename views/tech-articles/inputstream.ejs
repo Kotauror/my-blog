@@ -27,14 +27,13 @@ CommandLineUI(InputStream input) {
 }
 </code></pre>
 
-In the code above, I've passed <code>System.in</code> as an argument to the newly created instance of <code>Scanner</code> class.<br><br>
-We can think of <code>System.in</code> as a method to get the data from the user to our program through the console and of <code>Scanner</code> as a way to scan through that data. <br>
-
 The instance of <code>Scanner</code> needs to know where are the data comming from - we inform it by passing <code>System.in</code> as an argument. Now it "knows" that the data will come from the console.<br><br>
 See other types of input sources in the Scanner documentation (eg. file):
 
 <img src="https://image.ibb.co/nhFzay/Zrzut_ekranu_2018_05_30_o_14_01_38.png" width="100%">
 <div class="photo-data">https://docs.oracle.com/javase/7/docs/api/java/util/Scanner.html</div>
+
+We can think of <code>System.in</code> as a method to get the data from the user to our program through the console and of <code>Scanner</code> as a way to scan through that data. <br>
 
 <i><code>Scanner</code> is not the only way of going through data provided by the user - there is also <code>BufferedReader</code>, which has - comparing to <code>Scanner</code> - limited abilities and less handy methods.<br><br></i>
 
