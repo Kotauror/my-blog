@@ -77,4 +77,12 @@ module.exports = function(app) {
     })
   })
 
+  app.get('/tech-articles/printstream', function(req, res) {
+    likesController.count(11).then(function(likesCount) {
+      commentsController.list(11).then(function(comments) {
+      res.render('tech-articles/printstream', {likesCount: likesCount, comments: comments});
+      })
+    })
+  })
+
 }
