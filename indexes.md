@@ -8,4 +8,5 @@ node-server-test - 7
 varia / oceanic - 8
 run-java - 9
 java-access-modifiers - 10
-PrintStream - using and testing - 11ć
+PrintStream - using and testing - 11
+InputStream - using and testing - 12

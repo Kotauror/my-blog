@@ -1,0 +1,130 @@
+<%- include ../partials/header.ejs %>
+<div class="likes">
+  <%- include('../partials/likes-form.ejs', {value: 12}); %>
+  Likes so far: <%= likesCount %><br>
+<a href="/"> Back to main page <i class="fas fa-home"></i></a>
+</div>
+
+
+  <main>
+
+    <div class="article-title">Java InputStream</div>
+    <div class="sub-title">Using and testing Java InputStream</div>
+
+
+    <div class="article-section"> Introduction </div>
+
+    In my previous <a href="http://tech-and-chips.herokuapp.com/tech-articles/printstream"><u>post</u></a> I was talking about the way of using and testing <code>PrintStream</code> (output) in Java. In this note I am going to briefly discuss <code>InputStream</code> -
+     I say briefly, since the majority of logic is the same as in case of <code>PrintStream</code>.<br><br>
+
+  <code>InputStream</code> is a Java class that is a superclass of all other classes which represent an input stream of bytes. As <code>System.out</code> was an instance of <code>PrintStream</code>, <code>System.in</code> is an instance of type <code>InputStream</code>.<br><br>
+   In the code below, I first pass <code>System.in</code> as an argument, and later mark it in constructor as an instance of <code>InputStream</code>.
+<pre><code>
+commandLineUI = new CommandLineUI(System.in);
+
+CommandLineUI(InputStream input) {
+  this.input = new Scanner(input)
+}
+</code></pre>
+
+In the code above, I've passed <code>System.in</code> as an argument to the newly created instance of <code>Scanner</code> class.<br><br>
+We can think of <code>System.in</code> as a method to get the data from the user to our program and of <code>Scanner</code> as a way to scan through that data. <br>
+
+The instance of <code>Scanner</code> needs to know where are the data comming from - we inform it by passing <code>System.in</code> as an argument. Now it "knows" that the data will come from the console.<br><br>
+See other types of input sources in the Scanner documentation (eg. file):
+
+<img src="https://image.ibb.co/nhFzay/Zrzut_ekranu_2018_05_30_o_14_01_38.png" width="100%">
+<div class="photo-data">https://docs.oracle.com/javase/7/docs/api/java/util/Scanner.html</div>
+
+<i><code>Scanner</code> is not the only way of going through data provided by the user - there is also <code>BufferedReader</code>, which has - comparing to <code>Scanner</code> - limited abilities and less handy methods.<br><br></i>
+
+<div class="article-section"> Example of using System.in </div>
+Let's take look at an example of using <code>System.in</code>:<br><br>
+
+In app.java:
+<pre><code>
+commandLineUI = new CommandLineUI(System.in);
+</code></pre>
+
+In commandLineUJ.java
+<pre><code>
+CommandLineUI(InputStream input) {
+  this.input = new Scanner(input)
+}
+
+private String getUserInput() {
+  String userString = input.nextLine();
+  return userString;
+}
+</code></pre>
+
+In the <code>getUserInput()</code> method, we call the <code>nextLine()</code> method on <code>input</code>. Since we have a <code>Scanner</code> with <code>System.in</code> as an argument,
+out input will get the data from the user - from the console.
+The <code>nextLine()</code> method called on user input will give us the user input.
+
+<div class="article-section"> Testing </div>
+
+The goal of testing user input is to check if a particular kind of user input causes an expected reaction.<br><br>
+
+Testing has a logic similar to the one behind testing <code>PrintStream</code>.<br>
+In case of <code>PrintStream</code> we didn't want the program to print stuff to the console - we wanted to catch it instead of print it (hence we didn't use <code>System.out</code>).
+In case of <code>InputStream</code> we don't want the user to give us data - we want to provide the test data on our own (hence we don't want to use <code>System.in</code>).<br>
+In both scenarios we want to eliminate interactions through the console.<br><br>
+
+There are two sets of situations that I needed to covered in my tests - tests where there I want to use <code>CommandLineUI</code> but there is no user input and tests where there is user input.<br><br>
+
+<div class="article-section"> We want to use <code>CommandLineUI</code> but we don't care about user input (we don't use it in a particular method under test) </div>
+
+In the first situation, even though we won't care about the user input, we still need to somehow instantiate the <code>CommandLineUI</code> (our constructor requires an argument).<br>
+There are two ways to solve it: <br><br>
+
+1. We simply pass System.in as an argument in constructor. Since we know that we won't be using it anyway, it won't cause any problems with waiting for the input.
+
+<pre><code>
+commandLineUI = new CommandLineUI(System.in);
+</code></pre>
+
+2. In case we don't want to risk making a mistake (eg. we overlooked a test using <code>System.in</code>), we can feed something to out instance of CommandLineUI an empty string as an input.<br> But what should be feed it with? <br>
+As we don't care about the input, we will simply pass an empty String.<br>
+
+<img src="http://mrwgifs.com/wp-content/uploads/2013/10/Deal-With-It-Tom-Cruise-In-Top-Gun-Gif.gif" width="100%">
+
+So in my test, in the <code>@Before</code> block, I instantiate a new <code>CommandLineUI</code>.<br>
+Instead of passing it <code>System.in</code>, as I did in the "normal" code, I pass a new instance of <code>ByteArrayInputStream</code> which is empty.<br>
+
+<pre><code>
+this.input = new ByteArrayInputStream("".getBytes());
+commandLineUI = new CommandLineUI(this.input);
+</code></pre>
+
+This code makes a legit CommandLineUI.
+
+<div class="article-section"> We want to use <code>CommandLineUI</code> and we care about user input </div>
+
+The second set of situation is when want to test user input. We don't want it to be empty as above - we want to set it for the purpose of our tests to see if it causes expected reaction.
+
+Let's see an example of test:
+
+<pre><code>
+@Test
+public void returnsPositionGivenByThePlayer() {
+  InputStream input = new ByteArrayInputStream("0".getBytes());
+  CommandLineUI commandLineUI = new CommandLineUI(input);
+
+  assureEquals("0", commandLineUI.getUserInput());
+}
+</code></pre>
+
+In the code above, I've created an <code>input</code> and passed it to the <code>CommandLineUI</code> as an argument instead of <code>System.in</code>.<br><br>
+So when my test goes to the "normal" code and sees input, it sees "0" and doesn't ask user for the input.<br><br>
+The <code>input.nextLine()</code> method in the <code>getUserInput()</code> method will then be called on <code>"0"</code>, not the <code>System.in</code>.<br><br>
+This way we can see that <code>"0"</code> equals <code>"0"</code> without the need of manually typing this "0" to the console.
+
+<div class="comments">
+  <%- include('../partials/comments-form.ejs', {value: 12}); %>
+  <%- include ../partials/comments-list.ejs %>
+</div>
+
+</main>
+
+  <%- include ../partials/footer.ejs %>

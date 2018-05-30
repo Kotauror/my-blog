@@ -85,4 +85,11 @@ module.exports = function(app) {
     })
   })
 
+  app.get('/tech-articles/inputstream', function(req, res) {
+    likesController.count(12).then(function(likesCount) {
+      commentsController.list(12).then(function(comments) {
+      res.render('tech-articles/inputstream', {likesCount: likesCount, comments: comments});
+      })
+    })
+  })
 }
