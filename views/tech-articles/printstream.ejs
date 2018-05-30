@@ -18,11 +18,9 @@
   In this note I'll talk only about output streams and try to share my understanding of what is going on behind the scenes. I'll start with
   more theoretical remarks and then move to practical examples. <br><br>
 
-  <code>PrintStream</code> is a Java class that privides handy methods to print data (eg. println). <br><br>
+  <code>PrintStream</code> is a Java class that privides handy methods to print data (eg. println). <br>
 
-  <code>PrintStream</code> prints the data to(in) a specified place of output. <br><br>
-
-  This place is specified in an argument we pass when we create the <code>PrintStream</code> constructor. For example:
+  <code>PrintStream</code> prints the data to(in) a specified place of output. This place is specified in an argument we pass when we create the <code>PrintStream</code> constructor. For example:
 
 <pre><code>
 this.output = new ByteArrayOutputStream();
@@ -32,16 +30,15 @@ commandLineUI = new CommandLineUI(new PrintStream(this.output));
 I'll talk about this code in more detail later, now just wanted to show how <code>this.output</code> was passed as an argument in instantiating a <code>new PrintStream</code>.<br><br>
 
 <code>System.out</code>, that is widely used to print data to the console, is an instance of <code>PrintStream</code>. It means that we can call <code>PrintStream</code> methods on it (eg. <code>System.out.println</code>). In the code below,
-I first pass System.out as an argument, and later mark it in constructor as an instance of <code>PrintStream</code>.
+I first pass <code>System.out</code> as an argument, and later mark it in constructor as an instance of <code>PrintStream</code>.
 <pre><code>
-// in one file:
 commandLineUI = new CommandLineUI(System.out);
-// in another file:
+
 CommandLineUI(PrintStream output) {
   this.output = output
 }
 </code></pre>
-In the code above I have <code>System.out</code> under <code>this.output</code>, I've passed is as an instance of <code>PrintStream</code>.<br><br>
+In the code above I have <code>System.out</code> under <code>this.output</code>.<br><br>
 
 I said above that instances of <code>PrintStream</code> need an argument pointing to the place to which we want to stream output. So why <code>System.out</code> doesn't have one even though it's <code>PrintStream</code>'s instance? <br>
 Because <code>System.out</code> just knows that it prints to command line. Someone set it like that at some point in the past, hence we don't have to specify the output place :)
@@ -49,8 +46,8 @@ Because <code>System.out</code> just knows that it prints to command line. Someo
 <img src="https://m.popkey.co/020063/Ql0aW.gif?c=popkey-web&p=popkey&i=cats-animals&l=direct&f=.gif" width="100%">
 <div class="photo-data">Mind blown</div>
 
-<div class="article-section-2"> Using System.out example </div>
-Let's look at a wider example of using <code>System.out</code>:<br><br>
+<div class="article-section"> Example of using System.out </div>
+Let's take look at an example of using <code>System.out</code>:<br><br>
 
 In app.java:
 <pre><code>
@@ -67,8 +64,7 @@ private void greetUsers() {
   output.println("Hello!");
 }
 </code></pre>
-The code above simply uses <code>System.out</code>, "hidden" under output, to print stuff to the console.<br>
-Setting <code>System.out</code> to a variable (<code>output</code>) and then using this variable has a great advantage - we stop using the global scope.<br>
+The code above simply uses <code>System.out</code>, "hidden" under <code>output</code> variable, to print stuff to the console. Setting <code>System.out</code> to a variable and then using this variable has a great advantage - we stop using the global scope of <code>System.out</code>.<br>
 
 <div class="article-section"> Testing </div>
 
@@ -79,10 +75,10 @@ In order to do it, we don't want the stream to go to the console, but to our tes
 <img src="http://i.dailymail.co.uk/i/pix/2010/06/03/article-1283639-08DDD885000005DC-17_468x286.jpg" width="100%">
 <div class="photo-data">Finding the right track for my stream</div>
 
-In our test, in the <code>@Before</code> block, we instantiate a new CommandLineUI.<br>
-But instead of passing it <code>System.out</code>, as we did in the "normal" code, we pass a new instance of <code>PrintStream</code> with a specified output.<br>
-We do it because we don't want to print stuff to the console, but to catch it and have in a safe place from which we can get it and test it. <br>
-Our "safe place" will be an instance of <code>ByteArrayOutputStream</code> - a easy to manage Java class that allows you to store output data. <br>
+In my test, in the <code>@Before</code> block, I instantiate a new <code>CommandLineUI</code>.<br>
+But instead of passing it <code>System.out</code>, as I did in the "normal" code, I pass a new instance of <code>PrintStream</code> with a specified output.<br>
+I do it because I don't want to print stuff to the console, but to catch it and have in a safe place from which we can get it and test it. <br>
+My "safe place" will be an instance of <code>ByteArrayOutputStream</code> - a easy to manage Java class that allows you to store output data. <br>
 
 <pre><code>
 this.output = new ByteArrayOutputStream();
@@ -107,7 +103,7 @@ private void greetUsers() {
 }
 </code></pre>
 
-In the "normal" code, we have System.out under "output", but in out test, we have PrintStream with an output place.<br>
+As you remember, In the "normal" code, we have <code>System.out</code> under <code>this.output</code>, but in out test, we have <code>PrintStream</code> with an <code>output</code> place.<br>
 Because of this, "Hello" in our test won't go to the console, but to our <code>ByteArrayOutputStream output</code>.<br><br>
 
 Then we just check if the <code>output</code> has the right string.
