@@ -136,6 +136,12 @@ public int playMove(CommandLineUI commandLineUI, Board board, int level, String 
         return bestScoreMinPlayer;
     }
 }
+
+private Board putSignOnNewBoard(Board board, String signOfPlayer, String freePlace) {
+  Board boardClone = new Board(board.getPlaces());
+  boardClone.putSignOnBoard(signOfPlayer, Integer.parseInt(freePlace));
+  return boardClone;
+}
 </code></pre>
 
 <div class="article-section"> Diagram. </div>
