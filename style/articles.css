@@ -112,3 +112,7 @@ pre {
   padding-left: 3%;
   color: #647d7b;
 }
+
+.hoverItBig hover {
+  transform: scale(1.3);
+}

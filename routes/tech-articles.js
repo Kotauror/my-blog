@@ -100,4 +100,11 @@ module.exports = function(app) {
       })
     })
   })
+  app.get('/tech-articles/minimax', function(req, res) {
+    likesController.count(14).then(function(likesCount) {
+      commentsController.list(14).then(function(comments) {
+      res.render('tech-articles/minimax', {likesCount: likesCount, comments: comments});
+      })
+    })
+  })
 }

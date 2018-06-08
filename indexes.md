@@ -11,3 +11,4 @@ java-access-modifiers - 10
 PrintStream - using and testing - 11
 InputStream - using and testing - 12
 happiness - 13
+minimax 14

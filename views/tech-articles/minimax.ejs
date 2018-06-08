@@ -1,0 +1,176 @@
+<%- include ../partials/header.ejs %>
+<div class="likes">
+  <%- include('../partials/likes-form.ejs', {value: 14}); %>
+  Likes so far: <%= likesCount %><br>
+<a href="/"> Back to main page <i class="fas fa-home"></i></a>
+</div>
+
+
+  <main>
+
+    <div class="article-title">Minimax algorithm</div>
+    <div class="sub-title">And it's implementation in Java Tic-Tac-Toe game</div>
+
+
+    <div class="article-section"> Introduction </div>
+
+Minimax is a well-known algorithm often used in game theory for minimizing the possible loss and maximizing the possible win.
+It was used in the famous Deep Blue chess program, it's applied in the prisoner dillema and it can also by implemented in a classic tic-tac-toe game.<br>
+I knew about minimax before I even started coding (it was discussed during at least two independent courses at my law school!), so when I've heard that I'm going to apply it in my tic-tac-toe game, I got seriously excited and scared at the same time.
+It was an algorithm Alan Turing was experimenting with, so am I - not a super bright person - ready to apply it? It turned out that minimax is not as scary as it sounds, but there is one thing which makes it pretty tricksy - recursion and going through the tree.
+So before moving to the actual algorithm, I'll talk about recursive functions and trees.
+
+<div class="article-section"> Recursion </div>
+
+I've already wrote one <a href="http://tech-and-chips.herokuapp.com/tech-articles/recursion"><u>blog post</u><a> about recursion where I've explained how to write Fibonacci kata in a recursive way.
+Recursion is basically a function calling itself. An easy example would be a function that asks user a question and if the user doesn't answer correctly, it asks again. This problem can be solved with a <code>while</code> loop, but also with a recursive call.
+<br><br>
+Using <code>while</code> loop:
+
+<pre><code>
+public String getAnswerFromUser() {
+  while(true)
+  String answer = getInput();
+    if (answer.isCorrect()) {
+      return answer;
+    }
+}
+</code></pre>
+
+Using recursion:
+
+<pre><code>
+public String getAnswerFromUser() {
+  String answer = getInput();
+    if (answer.isCorrect()) {
+      return answer;
+    } else {
+      getAnswerFromUser()
+    }
+}
+</code></pre>
+
+From the example above we can learn one very important thing about recursive functions - they have to end at some point. Therefore a <b>recursive function needs to return some data at some point</b>, otherwise we'll have an infinite recursive call.
+In my tic-tac-toe minimax described below I'll be returning value of the last place on which a mark was put in the game (sounds vague right now, but will be explained below).
+
+<div class="article-section"> Tree </div>
+
+The example above is a very simple recursion. It's not really creating a tree of possibilities, it's more like a spirale. The difficulties (and trees) start when we need to pass an argument to the function and we change it each time the functions is called.
+In such situations we won't be in a spirale anymore, but we will create a tree of possibilities - different scenarios for different sets of arguments. That was the case in Fibonacci recursive solution, and it will be a case in minimax tic-tac-toe. <br><br>
+
+So our minimax tic-tac-toe program will be: <br>
+1) analyzing empty positions available on the board;<br>
+2) giving them scores; <br>
+3) picking the best one.<br><br>
+
+Below you can see a tree covering the first step. It shows all possible ways in which the game can finish (Player X is starting). <br>
+The numbers in the top left corners of the boards show the order in which my algorithm will be checking the scenarios (it's called depth first). <br>
+
+<img src="https://image.ibb.co/ie283T/numbers.jpg" width="100%">
+
+<div class="article-section-2"> Positions scores </div>
+
+The second step is about giving scores to the terminal positions - ones that ended the game (eg. in case of board nr 1 above, it's position nr 7 - bottom left corner).<br><br>
+TicTacToe is player by two players. Each of them wants a different thing. We will call the players Maximizing player (X in out example) and Minimizing player (O in our example). Maximizing player will be happy when it will get as many points for the position as possible (in my implementation of minimax, the more points for the position, the bigger chance of winning).<br>
+Minimizing player wants to "give" maximizing player as small number of points as possible - it wants to prevent maximizing player for winning the game as effectively as possible. <br><br>
+According to this logic, places which give win to X will get values from 0 to 10 (positive values) and places which give win to O will get negative values. <br> <br>
+
+There is one more thing - as you can see on the drawing above, X can potentially win on board 1 and 8, but the victory on board 1 is certain while the one on board 8 isn't. The values of the positions shouldn't then be equal.<br> In order to address this issue,
+each position will have the following value:<br>
+- for X winning it will be 10 - level. <br>
+- for O winning it will be the opposite: -(10 - level).<br><br>
+
+Level is basically how far down the tree we need to go to end the game. Thanks to this operation, board 1. will score more points (10 - 1 = 9) than board 8. (10 - 3 = 7) and board 1. will be the best scenario from X's perspective. <br><br>
+
+<img src="https://image.ibb.co/gK1FYT/levels.jpg" width="100%">
+
+<div class="article-section-2"> Picking the best position </div>
+
+There is one more thing to cover, namely picking the best position. At this point we know the whole tree and we know what value has each "terminal" move. <br><br>
+Tictactoe is made of rounds - first plays the MaxPlayer then the MinPlayer etc. Because each round the player is toggled, each rond there is a different tactics involved (either maximizing or minimizing). Out algorithm needs to take it under account. Looking at the drawing above, on level 0 the Maxplayer will pick the best position available on level 1.
+Below, on level 1, there will be a minimizing player, which will pick from level 2 as small number as possible, an so on. This way our algorithm will mimic the game of two rational players.
+Let's apply this rule to the drawing.<br><br>
+
+On the first board, on level 1, we have a minPlayer that has nothing to pick from the lower level, so the best score will be 9. <br>
+On board 2. minPlayer can pick between -8 and -8. It will pick -8 from the third board. <br>
+On board 5. minPlayer can pick between -8 and 7 (max player on board 7 had only one option to pick from: 7) and it will pick -8, as picking negative numbers is a better strategy for minPlayer. <br>
+Now we're back on level 0 with the maxPlayer which will pick the biggest number from 9, -8 and -8 (the numbers which were picked by the min player on level 1). It will of course pick 9. And so we know that the pest position will be the one that will lead max player to scoring 9. <br><br>
+
+And this is the whole logic behind my minimax :))) <br><br>
+
+Below I present my code and discuss the logic of a more complicated example step by step. <br>
+Cheers!<br>
+
+<div class="article-section"> Code. </div>
+
+<pre><code>
+@Override
+public int playMove(CommandLineUI commandLineUI, Board board, int level, String maxPlayer, String minPlayer) {
+    if (board.isWon() && board.winnerSign() == maxPlayer) {
+        return (10 -level);
+    } else if (board.isWon() && board.winnerSign() == minPlayer) {
+        return -(10 - level);
+    } else if (board.isTie()) {
+        return 0;
+    }
+    ArrayList&ltString&rt freePlaces = board.getFreePlaces();
+    if (level % 2 == 0) {
+        int bestScoreMaxPlayer = -1000;
+        String bestPlace = "temporary";
+        for (String freePlace : freePlaces) {
+            Board boardClone = putSignOnNewBoard(board, maxPlayer, freePlace);
+            int output = playMove(commandLineUI, boardClone, level + 1, maxPlayer, minPlayer);
+            if (output > bestScoreMaxPlayer) {
+                bestPlace = freePlace;
+                bestScoreMaxPlayer = output;
+            }
+        }
+        return level == 0 ? Integer.parseInt(bestPlace) : bestScoreMaxPlayer;
+    } else {
+        int bestScoreMinPlayer = 1000;
+        for (String freePlace : freePlaces) {
+            Board boardClone = putSignOnNewBoard(board, minPlayer, freePlace);
+            int output = playMove(commandLineUI, boardClone, level + 1, maxPlayer, minPlayer);
+            if (output < bestScoreMinPlayer) bestScoreMinPlayer = output;
+        }
+        return bestScoreMinPlayer;
+    }
+}
+</code></pre>
+
+<div class="article-section"> Diagram. </div>
+
+<img src="https://image.ibb.co/kV2fYT/fullgraph.jpg" width="100%" class="hoverItBig">
+
+<div class="article-section"> Step by step. </div>
+
+1. On level 0, board 1., we have three empty places. The game is not over so we can't return anything.<br>
+2. Since we're on level 0, we enter the <code>(level % 2 == 0)</code> part of code, which is the maxPlayer logic that is looking for the biggest possible score.<br>
+3. As we're looking for the biggest possible score, I set the initial <code>bestScoreMaxPlayer</code> of the MaxPlayer to be <code>-1000</code> (any big (bigger than -10 actually, -1000 is just more explicit) negative number would work) - any score will be bigger than this.<br>
+4. Our <code>playMove()</code> method is supposed to return us the best possible position, so we create a <code>bestPlace</code> variable and set it to a temporary string.<br>
+5. We iteate over the free places available starting with the first one.<br>
+6. We create a clone of <code>Board</code> to place the maxPlayer sign on it (X). This way we're just create board nr 2 from the diagram.<br>
+7. We call the <code>playMove()</code> function again with this new board as an argument.<br>
+8. Again, the game is not over, so we cannot return anything.<br>
+9. As we're now on level 1, we enter the second part of the if statement <code>(level % 2 == 0)</code> - the minPlayer logic.<br>
+10. Now the minPlayer puts its sign (O) on the board on the first possible empty place (board nr 3) and with this board calls the <code>playMove()</code> method.<br>
+11. We're on level two with board nr 3. Again, the game is not over, so we place the MaxPlayer sign on the board and repeat.<br>
+12. Now we're on level 3 with board nr 4. The game is over and it's a tie, so this node will return <code>0</code>.<br>
+13. We go back to iterating on level 2 with the output from level 3, which is 0.<br>
+14. 0 is bigger than the current <code>BestScoreMaxPlayer</code> (it is -1000), so 0 becomes the new best score of maxPlayer and the place that gave us this 0 (position 6) becomes the <code>bestPlace</code>.<br>
+15. Now we finish the iteration on level 2 - we put we put O on board, then X.<br>
+14. Node 2 gave us tie, so it returns <code>0</code> the same as the first one.<br>
+15. Our <code>bestScoreMaxPlayer</code> on level 2 is already 0 (from the first node), so we don't replace it.<br>
+16. We go back to level 1. The <code>bestScoreMinPlayer</code> is currently 1000 and the minPlayer looking for smaller numbers. So it replaces the <code>bestScoreMinPlayer</code> with 0 and the best position with <code>4</code> - the one that led to 0.<br>
+16. We do the same for branches 2 and 3.<br>
+17. Both branches 2 and 3 return <code>7</code>. It will not be replaced on level 1 by the minPlayer as 0 is for the minPlayer a better score than 7.<br>
+18. As a result, once we're back on level 0, we will return the <code>bestPlace</code> which is 4 - set by MinPlayer on level 1.<br>
+
+<div class="comments">
+  <%- include('../partials/comments-form.ejs', {value: 14}); %>
+  <%- include ../partials/comments-list.ejs %>
+</div>
+
+</main>
+
+<%- include ../partials/footer.ejs %>
