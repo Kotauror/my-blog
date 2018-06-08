@@ -92,4 +92,12 @@ module.exports = function(app) {
       })
     })
   })
+
+  app.get('/tech-articles/happiness', function(req, res) {
+    likesController.count(13).then(function(likesCount) {
+      commentsController.list(13).then(function(comments) {
+      res.render('tech-articles/happiness', {likesCount: likesCount, comments: comments});
+      })
+    })
+  })
 }

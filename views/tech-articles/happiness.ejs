@@ -1,0 +1,40 @@
+<%- include ../partials/header.ejs %>
+<div class="likes">
+  <%- include('../partials/likes-form.ejs', {value: 13}); %>
+  Likes so far: <%= likesCount %><br>
+  <a href="/"> Back to main page <i class="fas fa-home"></i></a>
+</div>
+
+
+    <main>
+  <div class="article-title">It’s ok not to be ok when coding goes wrong</div>
+  <div class="sub-title">Stop the happiness pressure</div>
+
+  I don’t usually write personal posts. I find doing that quite dangerous because of my previous experiences. A few years ago I used to have a pretty popular blog (before writing blogs was cool - this is how hipster I was :D) and then a stalker got interested in me, found out where I’m living and visited my mother asking if I’m ok. I guess this is my first personal blog post since then but I think the topic is worth it.
+
+  <div class="article-section"> No, I’m not having fun. </div>
+
+  I’ve started coding only a few months ago at Makers Academy. A great place to learn, no doubt, but there was an annoying pressure of constant fun & happiness. Each week we were given a weekend task and one of the questions to answer was: “are you having fun?”, cause if you're not, you can talk with one of the coaches. Same during the week - they were asking us if you have fun all the time, even when our tests were failing and we didn’t understand a thing from the workshop. Well, to be honest, in such moments the last thing I was feeling was happiness or fun. But I felt doubt, lots of doubt. I started to think that there’s something wrong with me, maybe software development is not for me if I’m not having fun all the time? Should I be excited after the whole day of failure or can I honestly say that I’m angry, tired and sad? Coaches are concerned when I'm not having fun, should I be concerned as well?
+
+  <div class="article-section"> Stopping the happiness pressure. </div>
+
+  I feel that there is a pressure of excitement - we’re developers, we love code, even when the code doesn’t love us. For days. And when we say that we’re angry, people - often seriously and honestly concerned with our well-being - start asking if we’re ok because we’re angry or sad. I believe that anger and sadness are crucial feelings that allow us to grow. Being constantly happy doesn’t always push us forward but being unsatisfied does, because we naturally want to stop being unsatisfied.
+   Also we wouldn't really understand what's happines if not for the moments of sadness that happen here and there. It's just like in the Inside Out movie - all emotions are useful, not only joy.
+
+  <img src="https://static1.squarespace.com/static/50cc63e3e4b00e9e6083f7ed/t/59245649b3db2bc6694ef291/1495553613015/Inside-out.jpg" width="100%">
+  <div class="photo-data">Who's your friend who likes to play? Bing Bong, Bing Bong His rocket makes you yell "Hooray!" Bing Bong, Bing Bong < crying inside ></div>
+
+  <div class="article-section"> Safe space </div>
+
+  I'm lucky to be a part of 8th Light team where it's ok to say that I'm tired or scared of a task or that something makes me sad. We even have a "safe space" meetings where we can share such thoughts without being judged.
+  I feel that this kind of safe space is needed across the tech, especially for new coders like me, because at the beginning it's very easy to start doubting yourself if you don't fit the stereotypical image of a newbie coder. 
+
+
+<div class="comments">
+  <%- include('../partials/comments-form.ejs', {value: 13}); %>
+  <%- include ../partials/comments-list.ejs %>
+</div>
+
+</main>
+
+<%- include ../partials/footer.ejs %>
