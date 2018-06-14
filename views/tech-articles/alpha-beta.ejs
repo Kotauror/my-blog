@@ -16,7 +16,7 @@
   <i><p6>I don't feel like I can explain the basics of alpha-beta pruning better than this gentleman <a href="https://www.youtube.com/watch?v=STjW3eH0Cik"><u>here</u></a>. This is the best YouTube video I've found on mini-max and alpha-beta, it also has this nice back-to-university vibe. <br><br></i></p6>
 
 To put this pretty complicated concept simple, when our algorithm using alpha-beta pruning sees that in the next branch it will get the same score or a score that is worse than the one it already has, it ignores (prunes) this branch (in practice: breaks from the <code>for</code> loop on this level). <br><br>
-<p6>Like in Love Island (unlimited source of metaphors and inspirations): you see that the new guy won't make your chances for 50k bigger? You don't get to know him better and iterate over the remaining candidates. Easy.*<br></p6><br>
+<p6>Like in Love Island (unlimited source of metaphors and inspirations): you see that the new guy won't make your chances for 50k bigger? You don't get to know him better and iterate over the remaining candidates. Easy.*<br></p6>
 
 <img src="https://i.imgflip.com/2c7oc9.jpg" width="100%">
 
@@ -30,7 +30,7 @@ In the levels of maximizing player (maxPlayer), alpha will be reset to the best 
 In the levels of minimizing player (minPlayer), beta will be reset to the best possible score from the point of view of minPlayer.<br>
 Alpha and beta are then derivatives to of minPlayer best score and maxPlayer best score. <br><br>
 
-In both maxPlayer and minPlayer levels we will check if beta is equal or smaller to alpha (in other words, we will check if the branch which has beta gives us the same or worse result to the alpha branch). It it is, we will break from this level and go back a level up.<br><br>
+In both maxPlayer and minPlayer levels we will check if beta is equal or smaller to alpha. In other words, we will check if the branch which has beta gives us the same or worse result to the alpha branch. In such cases we will break from this level and go back a level up.<br><br>
 
 Keeping track of alpha and beta, both being "values" set on different levels (alpha on max levels, beta on min levels), allows us to: <br>
 1) "take a look" from the upper level on the lower level, <br>
@@ -44,7 +44,7 @@ Therefore we will break on the level where this equality occured (level 2) and g
 
 <img src="https://image.ibb.co/hxUQvJ/20180614_135816.jpg" width="100%" class="hoverItBig">
 
-<p6> If you are patient enough, check out the arrows on the diagram to see how alpha and beta are changing. "before" on the diagram means that we go down the tree (it is before returning value at the leaf), "after" means that we go up the tree (after retuning value at the leaf). </p6>
+<p6> If you are patient enough, check out the arrows on the diagram to see how alpha and beta are changing. "before" or "bef" on the diagram means that we go down the tree (it is before returning value at the leaf), "after" or "aft" means that we go up the tree (after retuning value at the leaf). </p6>
 
 <div class="article-section"> Wikipedia pseudocode example </div>
 
@@ -74,7 +74,7 @@ This is a very clear pseudocode of mini-max with alpha-beta pruning that I've ap
 
 <div class="article-section"> My implementation </div>
 
-The elements that were added as an elements of alpha-beta pruning are written in red. The rest of the elements is the same as it was in the pure minimax (see the previous note).<br>
+The elements that were added as an elements of alpha-beta pruning are written in purple. The rest of the elements is the same as it was in the pure mini-max (see the previous <a href="http://www.http://tech-and-chips.herokuapp.com/tech-articles/minimax"><u>note</u></a>).<br>
 
 <pre><code>
   @Override
@@ -133,7 +133,7 @@ The elements that were added as an elements of alpha-beta pruning are written in
    }
 </code></pre>
 
-* Sorry for my sense of humor.
+* Sorry for my sense of humor. Love Island is actually a very bad TV series and I'm ashamed that I've watched it :P.
 
 <div class="comments">
   <%- include('../partials/comments-form.ejs', {value: 15}); %>
