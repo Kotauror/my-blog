@@ -113,6 +113,16 @@ pre {
   color: #647d7b;
 }
 
-.hoverItBig hover {
-  transform: scale(1.3);
+.hoverItBig:hover {
+  transform: scale(1.8);
+}
+
+p6 {
+  margin-left: 2em;
+  font-size: 0.8em;
+  line-height: 80%;
+}
+
+p7 {
+  color: #7a00d2;
 }

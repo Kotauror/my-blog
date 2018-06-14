@@ -1,0 +1,139 @@
+<%- include ../partials/header.ejs %>
+<div class="likes">
+  <%- include('../partials/likes-form.ejs', {value: 15}); %>
+  Likes so far: <%= likesCount %><br>
+  <a href="/"> Back to main page <i class="fas fa-home"></i></a>
+</div>
+
+    <main>
+  <div class="article-title">Alpha-beta pruning</div>
+  <div class="sub-title"> Making the minimax algorithm more effective</div>
+
+  <div class="article-section"> Introduction </div>
+
+  I talked about mini-max algorithm in my previous <a href="http://www.http://tech-and-chips.herokuapp.com/tech-articles/minimax"><u>post</u></a>, now it's time for alpha-beta pruning - an algorithm that sits on top of minimax and makes it more effective.<br><br>
+
+  <i><p6>I don't feel like I can explain the basics of alpha-beta pruning better than this gentleman <a href="https://www.youtube.com/watch?v=STjW3eH0Cik"><u>here</u></a>. This is the best YouTube video I've found on mini-max and alpha-beta, it also has this nice back-to-university vibe. <br><br></i></p6>
+
+To put this pretty complicated concept simple, when our algorithm using alpha-beta pruning sees that in the next branch it will get the same score or a score that is worse than the one it already has, it ignores (prunes) this branch (in practice: breaks from the <code>for</code> loop on this level). <br>
+Thanks to this operation there is less computing to make and our program will run faster. So when we aply alpha-beta to the mini-max tree, the output will be the same, but will be returned faster. It might not have a massive meaning for tic-tac-toe, but it definitely is useful for other programs.
+
+<div class="article-section"> Alpha-beta in more details </div>
+
+Alpha and beta are just variables which are passed as arguments in recursive calls of the mini-max function. The alpha is initially set to <code>-inf</code> (or any big negative number), beta is set to <code>+inf</code> (or any big positive number). <br><br>
+
+In the levels of maximizing player (maxPlayer), alpha will be reset to the best possible score from the point of view of maxPlayer. <br>
+In the levels of minimizing player (minPlayer), beta will be reset to the best possible score from the point of view of minPlayer.<br>
+Alpha and beta are then derivatives to of minPlayer best score and maxPlayer best score. <br><br>
+
+In both maxPlayer and minPlayer levels we will check if beta is equal or smaller to alpha (in other words, we will check if the branch which has beta gives us the same or worse result to the alpha branch). It it is, we will break from this level and go back a level up.<br><br>
+
+Keeping track of alpha and beta, both being "values" set on different levels (alpha on max levels, beta on min levels), allows us to: <br>
+1) "take a look" from the upper level on the lower level, <br>
+2) see what we can expect from there, <br>
+3) decide that we don't want to go there in case we already have an equal or better option.<br>
+
+<div class="article-section"> Example </div>
+
+On the diagram below (hover to make it bigger) we can see that in Node nr 2 on level 2 alpha and beta became equal (both are 0, highlighted in yellow). It means that this node will lead us to a score equal to the one we already have.
+Therefore we will break on the level where this equality occured (level 2) and go back to level 1. <br>
+
+<img src="https://image.ibb.co/hxUQvJ/20180614_135816.jpg" width="100%" class="hoverItBig">
+
+<p6> If you are patient enough, check out the arrows on the diagram to see how alpha and beta are changing. "before" on the diagram means that we go down the tree (it is before returning value at the leaf), "after" means that we go up the tree (after retuning value at the leaf). </p6>
+
+<div class="article-section"> Wikipedia pseudocode example </div>
+
+This is a very clear pseudocode of mini-max with alpha-beta pruning that I've applied in my solution. Alpha-beta elements are written in purple.
+
+<pre><code>
+ function alphabeta(node, depth, α, β, maximizingPlayer) is
+     if depth = 0 or node is a terminal node then
+         return the heuristic value of node
+     if maximizingPlayer then
+         v := -∞
+         for each child of node do
+             v := max(v, alphabeta(child, depth – 1, α, β, FALSE))
+    <p7>         α := max(α, v) </p7>
+      <p7>       if β ≤ α then </p7>
+      <p7>          break // β cut-off  </p7>
+         return v
+     else
+         v := +∞
+         for each child of node do
+             v := min(v, alphabeta(child, depth – 1, α, β, TRUE))
+        <p7>     β := min(β, v)</p7>
+        <p7>     if β ≤ α then </p7>
+        <p7>         break // α cut-off </p7>
+         return v
+</code></pre>
+
+<div class="article-section"> My implementation </div>
+
+The elements that were added as an elements of alpha-beta pruning are written in red. The rest of the elements is the same as it was in the pure minimax (see the previous note).<br>
+
+<pre><code>
+  @Override
+   public int pickPosition(CommandLineUi commandLineUi, Board board) {
+       String maxPlayer = board.getActivePlayerSign();
+       String minPlayer = board.getPassivePlayerSign();
+       return miniMaxAlgorithm(board, 0, <p7>-10000000</p7>, <p7>+10000000</p7>, maxPlayer, minPlayer);
+   }
+
+   private int miniMaxAlgorithm(Board board, Integer depth, <p7>Integer alpha</p7>, <p7>Integer beta</p7>, String maxPlayer, String minPlayer) {
+       if (board.isWon() && board.winnerSign().equals(maxPlayer)) {
+           return (MAX_VALUE_OF_PLACE - depth);
+       } else if (board.isWon() && board.winnerSign().equals(minPlayer)) {
+           return -(MAX_VALUE_OF_PLACE - depth);
+       } else if (board.isTie()) {
+           return TIE_VALUE;
+       }
+
+       String[] freePlaces = board.getFreePlaces();
+
+       if (isMaxPlayerDepth(depth)) {
+           int bestScoreMaxPlayer = -1000;
+           String bestPlace = "temporary";
+           for (String freePlace : freePlaces) {
+               Board boardClone = putSignOnNewBoard(board, maxPlayer, freePlace);
+               int output = miniMaxAlgorithm(boardClone,depth + 1, <p7>alpha</p7>, <p7>beta</p7>, maxPlayer, minPlayer);
+               if (output > bestScoreMaxPlayer) {
+                   bestPlace = freePlace;
+                   bestScoreMaxPlayer = output;
+               }
+               <p7>if (bestScoreMaxPlayer > alpha) alpha = bestScoreMaxPlayer;</p7>
+               <p7>if (beta <= alpha) break;</p7>
+           }
+           return depth == 0 ? Integer.parseInt(bestPlace) : bestScoreMaxPlayer;
+       } else {
+           int bestScoreMinPlayer = 1000;
+           for (String freePlace : freePlaces) {
+               Board boardClone = putSignOnNewBoard(board, minPlayer, freePlace);
+               int output = miniMaxAlgorithm(boardClone, depth + 1, <p7>alpha</p7>,<p7> beta</p7>, maxPlayer, minPlayer);
+               if (output < bestScoreMinPlayer) bestScoreMinPlayer = output;
+               <p7>if (bestScoreMinPlayer < beta) beta = bestScoreMinPlayer;</p7>
+               <p7>if (beta <= alpha) break;</p7>
+           }
+           return bestScoreMinPlayer;
+       }
+   }
+
+   private Board putSignOnNewBoard(Board board, String signOfPlayer, String freePlace) {
+       Board boardClone = new Board(board.getPlaces());
+       boardClone.putSignOnBoard(signOfPlayer, Integer.parseInt(freePlace));
+       return boardClone;
+   }
+
+   private boolean isMaxPlayerDepth(int depth) {
+       return (depth % 2 == 0);
+   }
+</code></pre>
+
+<div class="comments">
+  <%- include('../partials/comments-form.ejs', {value: 15}); %>
+  <%- include ../partials/comments-list.ejs %>
+</div>
+
+</main>
+
+<%- include ../partials/footer.ejs %>
