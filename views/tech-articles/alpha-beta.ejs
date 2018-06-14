@@ -7,15 +7,16 @@
 
     <main>
   <div class="article-title">Alpha-beta pruning</div>
-  <div class="sub-title"> Making the minimax algorithm more effective</div>
+  <div class="sub-title"> Making the minimax algorithm more efficient</div>
 
   <div class="article-section"> Introduction </div>
 
-  I talked about mini-max algorithm in my previous <a href="http://www.http://tech-and-chips.herokuapp.com/tech-articles/minimax"><u>post</u></a>, now it's time for alpha-beta pruning - an algorithm that sits on top of minimax and makes it more effective.<br><br>
+  I talked about mini-max algorithm in my previous <a href="http://www.http://tech-and-chips.herokuapp.com/tech-articles/minimax"><u>post</u></a>, now it's time for alpha-beta pruning - an algorithm that sits on top of minimax and makes it more efficient.<br><br>
 
   <i><p6>I don't feel like I can explain the basics of alpha-beta pruning better than this gentleman <a href="https://www.youtube.com/watch?v=STjW3eH0Cik"><u>here</u></a>. This is the best YouTube video I've found on mini-max and alpha-beta, it also has this nice back-to-university vibe. <br><br></i></p6>
 
 To put this pretty complicated concept simple, when our algorithm using alpha-beta pruning sees that in the next branch it will get the same score or a score that is worse than the one it already has, it ignores (prunes) this branch (in practice: breaks from the <code>for</code> loop on this level). <br>
+<p6>Like in Love Island (unlimited source of metaphors and inspirations): you see that the new guy won't make your chances for 50k bigger? You don't get to know him better and iterate over the remaining candidates. Easy.*<br></p6>
 Thanks to this operation there is less computing to make and our program will run faster. So when we aply alpha-beta to the mini-max tree, the output will be the same, but will be returned faster. It might not have a massive meaning for tic-tac-toe, but it definitely is useful for other programs.
 
 <div class="article-section"> Alpha-beta in more details </div>
@@ -128,6 +129,8 @@ The elements that were added as an elements of alpha-beta pruning are written in
        return (depth % 2 == 0);
    }
 </code></pre>
+
+* Sorry for my sense of humor.
 
 <div class="comments">
   <%- include('../partials/comments-form.ejs', {value: 15}); %>
