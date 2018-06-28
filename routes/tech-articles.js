@@ -116,4 +116,12 @@ module.exports = function(app) {
       })
     })
   })
+
+  app.get('/tech-articles/java-to-android', function(req, res) {
+    likesController.count(16).then(function(likesCount) {
+      commentsController.list(16).then(function(comments) {
+      res.render('tech-articles/java-to-android', {likesCount: likesCount, comments: comments});
+      })
+    })
+  })
 }

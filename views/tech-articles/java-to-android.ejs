@@ -1,0 +1,158 @@
+<%- include ../partials/header.ejs %>
+<div class="likes">
+  <%- include('../partials/likes-form.ejs', {value: 16}); %>
+  Likes so far: <%= likesCount %><br>
+  <a href="/"> Back to main page <i class="fas fa-home"></i></a>
+</div>
+
+    <main>
+  <div class="article-title">How to import Java code into Android app by using JAR</div>
+  <div class="sub-title"> + UnsupportedClassVersionError problems bonus </div>
+
+  <div class="article-section"> Introduction </div>
+
+  This note will be bittersweet.<br><br>
+
+  On the one hand, I'm so happy that my mentors at 8th Light added android to my apprenticeship program - it's a real fun!
+  I think that it's partially because of Android Studio, which gives you both front-end design and back-end in one IDE.
+  You can feel like graphic designer and coder at the same time. Lovely.
+
+  <img src="https://image.ibb.co/bYQf5T/Screen_Shot_2018_06_28_at_09_58_34.png" width="100%" class="hoverItBig">
+  <div class="photo-data">Half developer, half designer, how cool is that!?.</div>
+
+  On the other, reaching compatibility with external Java code and android app can be very (VERY) painful (see the last bonus section).<br><br>
+
+  But let's stop here with the talking about my emotional android rollercoster and say a few words about android apps in general.<br><br>
+  Android apps resemble well-known MVC (model-view-controller) pattern. In general, they have: <br>
+  <p7>1) <b>View</b> </p7> -> Front-end - XML files that define the design of the app (for example how tic-tac-toe grid looks like);<br>
+    <p7>2) <b>Controller</b> </p7> -> "action" files that connect front-end with the back-end. For example they tell that if a certain button on the front-end is clicked, it will invoke a method in the back-end;<br>
+    <p7>3) <b>Model</b></p7>  -> Back-end - where the logic of the program lies (in tic-tac-toe it would be definitions of Board and Game, AI player logic etc.)<br><br>
+
+  For the past few weeks I've been mastering my pure Java tic-tac-toe (it's available <a href="https://github.com/Kotauror/TicTacToeJava"><u>here</u></a>), which is basically the whole back-end logic + command line user interface. In this note I'll go step by step through my process of approaching the task of reusing this code in a new android app.
+
+  <div class="article-section"> Importing Java code into Android app </div>
+
+  <div class="article-section-2"> Building a java program /in IntelliJ/ </div>
+
+  Before trying to import a huge program, it's a good idea to understand the principles of importing JARs on an example of a very simple app such as this one:
+
+  <pre><code>
+package main;
+
+public class Human {
+
+    private int age;
+    private String name;
+
+    public Human(int age, String name) {
+        this.age = age;
+        this.name = name;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+}
+</code></pre>
+
+In the next sections I'm going to:<br>
+- put this code into a JAR file, <br>
+- import in in an android app, <br>
+- create an instance of the Human class in my android program, <br>
+- and print the name of that human into the screen of a smartphone.
+
+<div class="article-section-2"> Building a simple android app /in Android Studio/ </div>
+
+Just follow the steps:<br>
+a. download Android Studio;<br>
+b. create a new empty app;<br>
+c. this is how it should look like:<br>
+
+<img src="https://image.ibb.co/e5ArVT/android_Simple_App.png" width="100%" class="hoverItBig">
+<div class="photo-data">All done for you.</div>
+
+<div class="article-section-2"> Building a JAR file /back to IntelliJ/ </div>
+
+Now that we have a simple Java program and a simple android app - it's time to connect them using a JAR file! <br><br>
+JAR is a type of package file format (the name stands for Java ARchive). It's used to aggregate many Java class files and associated metadata and resources (text, images, etc.) into one file for distribution.
+On the example of tic-tac-toe it means that we can pack our whole logic into one "zip-like" file and reuse it somewhere else.<br><br>
+
+<p7>----> Creating a JAR file step by step using IntelliJ:<br></p7>
+
+a. Go to File -> Project Structure -> Artifacts -> click on [+] -> JAR -> from modules with dependencies... [this action adds an artifact]<br>
+b. Go to Build -> Build artifacts -> select the artifact created in the step above.<br><br>
+
+The JAR file is now accessible in root-of-your-project/out/artifacts...<br>
+
+<div class="article-section-2"> Importing a JAR file /back to Android Studio/ </div>
+
+<p7>----> Importing a JAR file step by step using Android Studio:</p7><br>
+
+a. Copy the JAR file created in the step above and paste it into root-of-your-project/app/libs in the android app;<br>
+b. Add the JAR file as a dependency: File -> project structure -> app -> dependencies;  <br>
+c. click [+] -> Jar dependency;<br>
+d. in a dialog box for selecting path open the JAR file;<br>
+e. click ok and gradle will start building :)<br>
+
+<div class="article-section-2"> Check if it's working /Android Studio/ </div>
+
+Now it's time to check if the import was successful by instantiating an object of the imported Human class, calling a method on it and printing it's result to the screen of the smartphone.<br><br>
+
+In order to do it, I've: <br>
+- created a TextView in the XML file with the id: textView2. <br>
+- told my program to fill the textView2 textView with the name of an instance of the Human class. <br>
+
+<img src="https://image.ibb.co/dm39jo/reuse.png" width="100%" class="hoverItBig">
+<div class="photo-data">Pay attention to the fact that I needed to import the Human class on line 9.</div>
+
+If you're lucky, your app will be working and you will see the data from the back-end printed out on the front-end:
+
+<img src="https://image.ibb.co/dyQpjo/justyna.png" width="100%" class="hoverItBig">
+
+<div class="article-section"> Compatability (UnsupportedClassVersionError) problems Bonus </div>
+
+If you're not lucky, and there is a hight chance you're not, you will get an error similar to this one: <br><br>
+<i>"class file has wrong version 54.0, should be 52.0"</i><br>
+<img src="http://leemoyer.files.wordpress.com/2013/05/whoa.jpg" width="100%">
+This was the first time I've tasted the java versions nightmare.<br>
+At the very moment I'm writing this post, there are 10 main versions of Java Development Kits (JDK) and each JDK specifies what file format version it supports. So the numbers from the error (54.0 and 52.0) are major.minor class versions supported by JDKs - cool, one step closer to debugging it.<br><br>
+
+<i>By the way, the reported major numbers are:<br><br>
+
+Java SE 10 = 54,<br>
+Java SE 9 = 53,<br>
+Java SE 8 = 52,<br>
+Java SE 7 = 51,<br>
+Java SE 6.0 = 50,<br>
+Java SE 5.0 = 49,<br>
+JDK 1.4 = 48,<br>
+JDK 1.3 = 47,<br>
+JDK 1.2 = 46,<br>
+JDK 1.1 = 45 </i><br><br>
+
+So this error tells you that the file format of the JAR file (54) is higher than the format of android program (52).<br><br>
+<p7><b> At the very moment I'm writing this post, Android is not supporting Java 10 that I've used to create the JAR file. </b></p7><br><br> Therefore there was no way to increase the version of my android app - there was only a way down in the JAR file. <br>
+In order to fix the problem, I needed to compile the JAR file with a lower version of Java - I've decided to use Java 8 (file format 52), which was used by my android app. <br><br>
+
+You can change the language version in IntelliJ by going to:<br>
+ File -> Other Settings -> Default Project Structure -> Project -> pick a project language level (8 in my case) <br><br>
+
+If your app is using Java 8 language features like Streams or lambdas, this needs to be noted in build.gradle file of the android app. This can be done by going to:<br> File -> Project Structure -> app and picking 1.8 in the Source and Target Compatibility.
+
+<img src="https://image.ibb.co/cxoZjo/1_8_java.png" width="100%" class="hoverItBig">
+
+There are also other smaller problems connected to switching from Java 10 to Java 8 - probably at least some of the libraries you're using were compatible with java 10, not 8. Be patient, update the versions one by one, without the rush. <br><br>
+Make sure your whole JAR file is compatible with the android program - once you've imported the JAR file, you can't change it within the andoid app! You can only reimport it, what can be pretty annoying.
+
+<div class="article-section"> Lesson Learned </div>
+
+Coding is one thing, being patient enough to solve all the setup problems is another. Unfortunately, Java + android is like stepping on a minefield - remember the 10 versions of Java? Add to it a fact that there are 27 different versions of android. Also, the more libraries and external JARs you use, the more versions to tackle. <br><br> My most important lesson learned and advice is: whenever you add external sources, do it one by one, fix conflicts one by one. If you do more at the same time, you might get overwhelmed with the number of conflicts.
+
+<div class="comments">
+  <%- include('../partials/comments-form.ejs', {value: 16}); %>
+  <%- include ../partials/comments-list.ejs %>
+</div>
+
+</main>
+
+<%- include ../partials/footer.ejs %>
