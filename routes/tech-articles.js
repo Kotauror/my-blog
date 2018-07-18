@@ -124,4 +124,12 @@ module.exports = function(app) {
       })
     })
   })
+
+  app.get('/tech-articles/clojurescript-setup', function(req, res) {
+    likesController.count(17).then(function(likesCount) {
+      commentsController.list(17).then(function(comments) {
+      res.render('tech-articles/clojurescript-setup', {likesCount: likesCount, comments: comments});
+      })
+    })
+  })
 }

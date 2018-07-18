@@ -14,3 +14,4 @@ happiness - 13
 minimax 14
 alpha-beta: 15
 java-android: 16
+CLJS setup: 17

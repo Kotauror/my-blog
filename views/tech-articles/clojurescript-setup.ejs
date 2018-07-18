@@ -1,0 +1,207 @@
+<%- include ../partials/header.ejs %>
+<div class="likes">
+  <%- include('../partials/likes-form.ejs', {value: 17}); %>
+  Likes so far: <%= likesCount %><br>
+<a href="/"> Back to main page <i class="fas fa-home"></i></a>
+</div>
+
+
+  <main>
+
+    <div class="article-title">ClojureScript project setup</div>
+    <div class="sub-title">How to setup a ClojureScript project (includes Leiningen and Speclj setup)</div>
+
+
+    <div class="article-section"> Introduction </div>
+
+Setting up a new project in a new language is always a pain for me. Long time spend on finding frameworks, fixing conflicts, never-ending missing dependencies - story of my life. This time it was in ClojureScript - so far my least favourite language (more about that in another note :D ).
+To save you my pain, below I include notes that I've made while going through the setup.
+
+<div class="article-section"> Hello World in ClojureScript </div>
+
+I believe it's always a good idea to start with setting up a pure project (pure = no additional frameworks) before moving to move complex structures. I've started with logging <code>Hello World</code> - a task well described in <a href="https://clojurescript.org/guides/quick-start"><u>this</u><a> guide. Below I've copied some code from the guide and added my own comments.
+
+<div class="article-section-2"> Setup project structure </div>
+
+<pre><code>
+  hello-world        # Our project folder
+  ├─ src             # The CLJS source code for our project
+  │  └─ hello_world  # Our hello_world namespace folder
+  │     └─ core.cljs # Our main file
+  └─ deps.edn        # (macOS/Linux only) A file for listing our dependencies
+</code></pre>
+
+deps.edn should contain:
+<pre><code>
+{:deps {org.clojure/clojurescript {:mvn/version "1.10.339"}}}
+</code></pre>
+
+core.cljs (file where we keep our ClojureScript code) should contain code printing Hello World:
+<pre><code>
+  (ns hello-world.core)     #ns stands for namespace
+
+  (println "Hello world!")
+</code></pre>
+
+<div class="article-section-2"> Run the program </div>
+In the command line enter:
+
+<pre><code>
+clj --main cljs.main --compile hello-world.core --repl
+</code></pre>
+
+- <code>clj</code> stands for clojurescript commands; <br>
+- <code>--main</code> invokes a Clojure function, in this case cljs.main. The <code>cljs.main</code> function supports a variety of command line arguments to specify common tasks. <br>
+- <code>--compile</code> specifies that we want to compile the <code>hello-world.core</code> namespace. <br>
+- <code>--repl</code> to say that we want a REPL to launch immediately when compilation completes.<br><br>
+
+In order to run repl only, type:
+
+<pre><code>
+clj --repl
+</code></pre>
+
+<div class="article-section-2"> Adding new features to core.cljs </div>
+
+Add the last two lines to core.cljs (average function):
+
+<pre><code>
+(ns hello-world.core) // namespace
+
+(println "Hello world!")
+
+
+(defn average [a b]
+  (/ (+ a b) 2.0))
+</code></pre>
+
+In the average function we:<br>
+- define average function that takes two arguments <code>a</code> and <code>b</code>; <br>
+- dd a and b <code>(+ a b)</code> then we divide them (/) by 2.0.<br>
+
+<div class="article-section-2"> Running program in REPL, reloading the file </div>
+
+At the REPL prompt, recompile and reload your namespace by evaluating the following:
+<pre><code>
+(require '[hello-world.core :as hello] :reload)
+</code></pre>
+Thanks to this operation, the whole namespace <code>hello-world.core</code> will be named as <code>hello</code>. From now on, when we want to use sth from the namespace, we will just call <code>hello</code>.<br>
+<code>:reload</code> runs the program. Without it, it will just require it (eg. the methods will be available for us to use) but without running it. <br>
+Then we call an average method from hello namespace and pass two arguments to it.
+<pre><code>
+(hello/average 20 13)
+</code></pre>
+
+<div class="article-section-2"> Run a built in simple web server via the <code>--serve</code> flag: </div>
+enter:
+<pre><code>
+clj --main cljs.main --compile hello-clojureS.core --serve
+</code></pre>
+Open localhost:9000 and dev tools to see it printed.
+
+<div class="article-section"> Leiningen </div>
+
+When it came to setting up a "real" project, I needed a testing framework. I was advised by my mentors at 8th Light to use <a href="https://github.com/slagyr/speclj"><u>Speclj</u><a> testing framework that looks and feels a lot like RSPec (ruby testing framework).
+  I order to use it, I needed Leiningen - a tool for automating Clojure and ClojureScript projects. The installation steps are briefly described on Leiningen <a href="https://github.com/technomancy/leiningen/blob/stable/README.md"><u>page</u><a>:<br><br>
+  1. Make sure you have Java installed; version 8 is recommended at this time. <br>
+  2. Download the lein script from the stable branch of this project.<br>
+  3. Place it on your <code>$PATH</code>. (<code>~/bin</code> is a good choice if it is on your path.)<br>
+  4. Set it to be executable. <code>(chmod +x ~/bin/lein)</code><br>
+  5. Run it.<br><br>
+  Below I'll address some of the steps that caused me problems.
+
+  <div class="article-section-2"> Step 2 - Download the lein script from the stable branch of this project.</div>
+
+  I've downloaded the script from <a href="https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein"><u>here</u><a>. But then I had no idea how and where to save it. I've decided to save it on desktop with a lein name, no file extension.
+
+<div class="article-section-2">Step 3 - Place it on your <code>$PATH</code>. (<code>~/bin</code> is a good choice if it is on your path.)</div>
+
+Placing something on your <code>$PATH</code>. means that you won't have to set the path to the executable/script, but you can run it by its name as a command, for example <b><i>node</i></b> app.js, <b><i>npm</i></b> init etc.<br>
+How to know what the path is? Type echo <code>$PATH</code> in the terminal to learn. For me the output is:
+
+<pre><code>
+/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+</code></pre>
+
+I've tried to move my lein file from the desktop to /usr/bin/ (<code>mv lein /usr/bin/</code>) but it was not permitted, even with sudo command. It was probably some security measure on my computer.
+I've decided then to move it to /usr/local/bin/ which is also on the path.
+
+<div class="article-section-2">Step 4 - Set it to be executable. (chmod +x ~/bin/lein).</div>
+I needed to change lein file permissions to be executable by all groups.<br><br><br>
+
+Once you're done with the steps, enter <code>lein help</code> in the terminal - it will install leiningen automatically.<br><br>
+
+P.S. You can install leiningen by using homebrew (<code>brew install leiningen</code>) - but you risk having an older/unofficial version + don't get the important lesson of using <code>$PATH</code>.
+
+<div class="article-section"> Starting a speclj project with a testing framework </div>
+
+Once I've installed Leiningen, I've came back to setting up Speclj project. I run:
+
+<pre><code>
+lein new specljs testing_project
+</code></pre>
+
+to create a testing_project. As a result, I got a new testing_project folder.
+
+<img src="https://image.ibb.co/mkgUPJ/tree.png" width="100%">
+
+Pay attention to two directories inside of it: spec and src. Both have two folders clj and cljs - clj will be for Clojure code, while cljs for ClosureScript. In spec I'll put my test code, in src al other code. <br>
+In the root there is also project.clj file which configures the project. It defines dependencies, plugins and paths. In the bin folder there is a speclj file - a test runner executable. <br><br>
+
+Now, let's take a look at core_spec.cljs file where we can find the following code:<br>
+
+<pre><code>
+(ns first_project.core-spec
+  (:require-macros [speclj.core :refer [describe it should=]])
+  (:require [speclj.core]
+            [first_project.core :as my-core]))
+
+(describe "A ClojureScript test"
+  (it "fails. Fix it!"
+    (should= 0 1)))
+</code></pre>
+
+This is our first failing test.
+
+First, we <code>:require-macros</code> the speclj.core namespace and <code>:refer</code> each speclj test word that you want to use.
+  Your spec files must <code>:require</code> the speclj.core too. It loads all the needed speclj namespaces. Also pull in the library that you're testing (<code>first_project.core</code> in this case).
+  In order to test our code, we also need to require our namespace (code from src folder) - in the case above I've aliased it using <code>:as</code>.<br>
+  We run it from root level:
+
+<pre><code>
+$ lein cljsbuild test
+</code></pre>
+
+<div class="article-section-2">Problems bonus :) </div>
+The two problems that I've happened upon at this stage were:<br>
+- speclj didn't work with Java 10 - needed to downgrade to Java 8; <br>
+- I didn't have phantomJS - I've installed it using homebrew (<code>brew install phantomjs</code>). You can also do it manually (downloading & adding to /usr/local/bin/ as described above for lein).
+
+<div class="article-section-2">Testing methods of my authorship</div>
+
+Finally I've tried to test a method of my authorship - I've used my <code>average</code> method created above and pasted in to the src/cljs/first_project/core.cljs:
+
+<pre><code>
+(ns first_project.core)
+
+(defn average [a b]
+(/ (+ a b) 2.0))
+</code></pre>
+
+I wrote for it the following passing test and added it to the spec/cljs/first_project/core_spec.cljs file:
+<pre><code>
+  (describe "Counts average"
+    (it "returns average"
+      (should=
+        15
+        (my-core/average 20 10))))
+</code></pre>
+
+<div class="comments">
+  <%- include('../partials/comments-form.ejs', {value: 17}); %>
+  <%- include ../partials/comments-list.ejs %>
+</div>
+
+</main>
+
+<%- include ../partials/footer.ejs %>
