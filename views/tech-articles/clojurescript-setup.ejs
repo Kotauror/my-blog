@@ -176,13 +176,18 @@ $ lein cljsbuild test
 The two problems that I've happened upon at this stage were:<br>
 - speclj didn't work with Java 10 - needed to downgrade to Java 8; <br>
 - I didn't have phantomJS - I've installed it using homebrew (<code>brew install phantomjs</code>). You can also do it manually (downloading & adding to /usr/local/bin/ as described above for lein).
+- I needed to add: <br>
+<pre><code>
+:jvm-opts ["--add-modules" "java.xml.bind"]
+</code></pre>
+to project.clj in order to fix an error <code>Caused by: java.lang.ClassNotFoundException: javax.xml.bind.DatatypeConverter, compiling:(cljs/util.cljc:1:1)</code>
 
 <div class="article-section-2">Testing methods of my authorship</div>
 
 Finally I've tried to test a method of my authorship - I've used my <code>average</code> method created above and pasted in to the src/cljs/first_project/core.cljs:
 
 <pre><code>
-(ns first_project.core) 
+(ns first_project.core)
 
 (defn average [a b]
 (/ (+ a b) 2.0))

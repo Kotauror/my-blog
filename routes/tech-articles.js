@@ -132,4 +132,12 @@ module.exports = function(app) {
       })
     })
   })
+
+  app.get('/tech-articles/clojurescript-syntax', function(req, res) {
+    likesController.count(18).then(function(likesCount) {
+      commentsController.list(18).then(function(comments) {
+      res.render('tech-articles/clojurescript-syntax', {likesCount: likesCount, comments: comments});
+      })
+    })
+  })
 }

@@ -1,0 +1,164 @@
+<%- include ../partials/header.ejs %>
+<div class="likes">
+  <%- include('../partials/likes-form.ejs', {value: 18}); %>
+  Likes so far: <%= likesCount %><br>
+<a href="/"> Back to main page <i class="fas fa-home"></i></a>
+</div>
+
+  <main>
+
+    <div class="article-title">Speaking ClojureScript-JavaScript hybrid language</div>
+    <div class="sub-title">How ClojureScript syntax is build and how to call JavaScript methods in it</div>
+
+
+    <div class="article-section"> Introduction </div>
+
+If you google "What is ClojureScript", you'll lean that ClojureScript is a dialect of Clojure that compiles to JavaScript.<br><br>
+> be me, a newbie developer knowing Ruby, JavaScript and Java <br>
+> read this description <br>
+> panic. <br><br>
+
+For those of you who don't know, Clojure (and hence ClojureScript) - opposite to Ruby, JS and Java - is a functional language. You don't have nice objects, classes etc. - everything is a function.
+That's a totally different paradigm of coding to what I've learned before. <br><br>
+Functional languages are usually used in programs that process complex mathematical functions and this is where they SHINE! <br>
+At 8th Light I was asked to build a single page website in ClojureScript (CLJS) that prints nerby cities from an API -
+not a typicall task for a functional language :D <br>
+But the apprenticeship at 8th Light is about challenging yourself and challenging it was. <br><br>
+
+I don't think I would be able to deliver this product in a week if not for the fact that because ClojureScript compiles to JavaScript,
+I was able to utilise some js methods in my ClojureScript code to do the front-endish stuff. <br> <br>
+
+Now I'm feel that I'm ready to share with you some tips about how to use JS methods in ClojureScript code. Most of the examples I'll be using are connected to API calls. I'll talk about how to fetch data from API in CLJS and how to test it in next post.
+
+<div class="article-section"> Polish Notation </div>
+
+Before we move to JS, few words about Polish notation. Clojure and ClojureScript use Polish notation (prefix notation) where operators precede their operands. So instead of writing (1 + 1) you write (+ 1 1 ).
+
+<img src="https://cdn.movieweb.com/img.news.tops/NEKO7G4bwr3KNP_1_b/Yoda-Movie-Star-Wars-Story-Frank-Oz-Confirms.jpg" width="100%">
+<div class="photo-data">It's like speaking Yoda - add 1 1 you must :D. </div>
+
+So plus is the function while 1 and 1 are the arguments. You don't indicate arguments with additional parenthesis what is pretty ironic considering the fact that both
+Clojure and ClojureScript use parenthesis almost everywhere. <br><br>
+
+Let's take a look at a more complicated example:
+
+<pre><code>
+(defn update-latitude [value]
+  (swap! latitude (fn[] value)))
+</code></pre>
+In the code above, in <code>update-latitude</code> function we call <code>swap!</code> CLJS build-in methods with arguments of <code>latitude</code> and an anonymous function that simply returns <code>value</code>. <br><br>
+
+Now a more complicated one:
+
+<pre><code>
+(defn extract-data [response-promise callback]
+  (.then response-promise #(use-json %1 callback)))
+</code></pre>
+
+<code>Extract-data</code>  function accepts a promise (<code>response-promise</code> ) and a <code>callback</code>  as arguments.
+First it resolves the promise using <code>.then</code>  and later, the result of resolving the promise, is passed as the first argument to <code>use-json</code>  function, whose second argument is a <code>callback</code> .<br><br>
+
+I hope you get it now - function first, arguments later :) - that's the key.
+
+<div class="article-section"> JavaScript Interop </div>
+
+Also before moving to applying JS methods, I should mention JavaScript Interop. Because of the close connection between ClojureScript and JavaScript, there are many methods that help to convert
+ ClojureScript into JavaScript and the other way around. The list below is taken from <a href="http://cljs.info/cheatsheet/"><u>here</u></a>.
+
+<img src="https://image.ibb.co/nhGHYd/Zrzut_ekranu_2018_07_20_o_15_47_39.png" width="100%">
+
+For example, <code> clj->js (clj->js x)</code> transforms ClojureScript values to JavaScript.
+
+<img src="https://image.ibb.co/dzigtd/Zrzut_ekranu_2018_07_20_o_16_46_33.png" width="100%">
+
+<div class="article-section"> Invoking JS methods in CLJS code </div>
+
+The are to ways to invoke a JS function in CLJS - by prefixing the name of the function with <code>.</code> (dot) or with <code>js/</code> <br><br>
+
+We use <code>js/</code> prefix for the JS root methods - once that are colled on the window. If you open the dev tools in a browser and type <code>window.</code>, everything that will appear there will have to be prefixed by <code>js/</code>. For example:<br>
+
+<pre><code>
+(defn fetch [url]
+  (js/fetch url))    ##### js/fetch
+</code></pre>
+
+<pre><code>
+(js/console.log "hello")    ##### js/console.log
+</code></pre>
+
+<pre><code>
+  (.getElementById js/document "element_name")    ##### js/document
+</code></pre>
+
+Examples of methods prefixed by . :<br>
+
+<pre><code>
+(.getElementById js/document "element_name")     ##### .getElementById
+</code></pre>
+
+<pre><code>
+(.json response       ##### .json
+</code></pre>
+
+<pre><code>
+(.then promise callback)       ##### .then
+</code></pre>
+
+It's easy to see a difference between JS methods and CLJS methods (either build-in or created by you) as the latter arren't prefixed by anything.
+<br><br>Let's then take a look at the function below that has different kinds of methods:
+
+<pre><code>
+  (defn add-longitude-input-listener []
+   (.addEventListener
+    (.getElementById js/document "longitude")
+    "change"
+    (wrap-function-for-event update-longitude)))
+</code></pre>
+
+In the code above, inside the <code>add-longitude-input-listener</code> function, we call <code>.addEventListener</code> - a JS build-in method. <br><br>
+
+In JS  <code>.addEventListener</code>  is called on an element of document and accepts two arguments: type of event (eg. click) and a function that should be called when the event occurs.<br><br>
+
+In the CLJS implementation, in order to follow the JS steps, we need to find the element:
+
+<pre><code>
+  (.getElementById js/document "longitude")
+</code></pre>
+
+Then call the <code>.addEventListener</code> method and pass as arguments <code>"change"</code> and method. In our case the function is <code>wrap-function-for-event</code> - a CLJS function which accepts <code>update-longitude</code> (another CLJS function) as an argument.<br>
+If we put it in one line and add numbers to indicate the order, it would look like this:
+<pre><code>
+  (defn add-longitude-input-listener [] (.addEventListener (.getElementById js/document "longitude") "change" (wrap-function-for-event update-longitude)))
+                                                2.          |                1.                    | arg. of 2|                   arg. of 2
+</code></pre>
+
+<div class="article-section"> Accessing properties CLJS-JS-style </div>
+
+One more thing before you start - accessing properties.<br>
+Imagine you have a JS object that has a name and age:<br>
+<pre><code>
+var coder = {name: "Justyna", age:27}
+</code></pre>
+
+In JS, if you would like to access the age property, you would write <code>coder.age</code>. In CLJS, when you deal with JS object that has some properties (either because you created it using JS Interop) or because you've received it (eg. when calling .JSON on the output of api),
+you need to write: <code> .-age </code> to access it. Dot to indicate JS and dash to indicate the property. More complicated examples:
+
+<pre><code>
+(defn get-city-names [json]
+  (.-geonames json))
+</code></pre>
+
+In this example, we get the geonames property from json passed as an argument to get-city-names function.
+
+<div class="article-section"> Wrapping up </div>
+
+In my next post I'll write about fetching data from API using CLJS-JS hybrid language and about testing it using speclj. All the exmplanation above was needed for me to get straight to the point in my next post. <br><br>Cheers!
+
+<div class="comments">
+  <%- include('../partials/comments-form.ejs', {value: 18}); %>
+  <%- include ../partials/comments-list.ejs %>
+</div>
+
+</main>
+
+<%- include ../partials/footer.ejs %>
