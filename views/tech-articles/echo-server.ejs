@@ -34,7 +34,7 @@ In general, multiple clients can connect to the same port on the server at the s
 
 <div class="article-section-2"> Sockets </div>
 
-Sockets are "elements" that both Client and Server should have in order to be able to connect. They allow them to communicate with each other over network. Java has two build in classes - <code>Socket</code> - representing client side of connection, and <code>ServerSocket</code>, representing server side.
+Sockets are "elements" that both Client and Server should have in order to be able to connect. Java has two build in classes - <code>Socket</code> - representing client side of connection, and <code>ServerSocket</code>, representing server side.
 Remember the middle man? The client doesn't send the data directly to the server,
 it does it through the socket, also server doesn't get the data from the client, but from its socket. <br>
 Realising that all the hard work with the connection is done by the sockets is super important for the purpose of testing. In the test we don't want to have to run a real server and wait for the real connections,
