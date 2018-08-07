@@ -74,9 +74,9 @@ public class Main {
 The heart of the EchoServer is the <code>run()</code> method. This method has two main parts to it - <code>try</code> and <code>catch</code>. We put inside the <code>try</code> block a code that might throw an exception. If it doesn't, the <code>catch</code> block won't be activated, if it does, it will. We can create different catches for different types of exceptions, I've created only one for <code>IOException</code>.
 
 In the run() method: <br>
-  <p6>- <code>EchoServer</code>'s <code>ServerSocket</code> accepts a connection with client's socket. This method has been extracted to a separate method <code>accept()</code> that returns the accepted socket. Thanks to this operation I can overwrite the <code>Socket</code> returned from <code>accept()</code> in my tests (more about it in the test section below).<br>
+  - <code>EchoServer</code>'s <code>ServerSocket</code> accepts a connection with client's socket. This method has been extracted to a separate method <code>accept()</code> that returns the accepted socket. Thanks to this operation I can overwrite the <code>Socket</code> returned from <code>accept()</code> in my tests (more about it in the test section below).<br>
   - It creates an <code>IOHandler</code> for this accepted client's socket. <code>IOHandler</code> is responsible for reading from the socket and writing to it.<br>
-  - I call <code>echo()</code> with the <code>IOHandler</code> as an argument. Echo is a loop that constantly checks for any data from client's socket. If there is any that isn't <code>nill</code>, it's printed back to the client's socket.</p6><br><br>
+  - I call <code>echo()</code> with the <code>IOHandler</code> as an argument. Echo is a loop that constantly checks for any data from client's socket. If there is any that isn't <code>nill</code>, it's printed back to the client's socket.<br><br>
 
 <pre><code>
 public class EchoServer {
