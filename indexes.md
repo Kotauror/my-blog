@@ -16,3 +16,4 @@ alpha-beta: 15
 java-android: 16
 CLJS setup: 17
 CLJS syntax 18
+echo-server 19

@@ -140,4 +140,12 @@ module.exports = function(app) {
       })
     })
   })
+
+  app.get('/tech-articles/echo-server', function(req, res) {
+    likesController.count(19).then(function(likesCount) {
+      commentsController.list(19).then(function(comments) {
+      res.render('tech-articles/echo-server', {likesCount: likesCount, comments: comments});
+      })
+    })
+  })
 }

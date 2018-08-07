@@ -1,0 +1,286 @@
+<%- include ../partials/header.ejs %>
+<div class="likes">
+  <%- include('../partials/likes-form.ejs', {value: 19}); %>
+  Likes so far: <%= likesCount %><br>
+  <a href="/"> Back to main page <i class="fas fa-home"></i></a>
+</div>
+
+
+    <main>
+  <div class="article-title">Echo Server</div>
+  <div class="sub-title">Writing and testing Java Echo Server</div>
+
+My new task at 8th Light is to write an echo server in Java - a server that repeats whatever user enters. Maybe it sounds trivial, but actually is very exciting!
+It's much different from the coding I've done so far - it's not only about writing a proper function that returns some stuff that we pass to another function etc., it's more like a living organism that I can interact with :D
+Anyway, I started working on it from googling the topic and found a very nice Java <u><a href="https://docs.oracle.com/javase/tutorial/networking/sockets/definition.html">documentation</a></u> describing step by step how to do it.
+In this post I'm going to explain the crucial vocabulary, explore my code and explain how to test an echo server.
+
+<div class="article-section"> Vocabulary </div>
+
+<div class="article-section-2"> Server </div>
+
+Server is a computer that is accessible by network, and by network we should understand both Internet (HTTP server) and local network. For the computer to "become" a server, we need to "run" the server, which is nothing else than simply running the program.
+Echo server that I'm going to describe works on the local network. It means that I can run my server on my machine and then other machines in my local network can connect to it using my IP address and port number. Server is always bound to a particular port on a local machine.
+
+<div class="article-section-2"> Client </div>
+
+Client is a host through which an end user communicates with server. It's an important detail - user's don't communicate directly with servers, they need a middle man. It took me more than an hour to figure it out. I was trying to interact with the server in the same window I run it, without using a client, simply inserting input and waiting for it to echo it back.
+Then I've realised my mistake and used netcat client instead. Clients can connect to the server when it's running - that is, listening for connections.
+
+<img src="https://image.ibb.co/cG8Foz/20180807_115640.jpg" width="100%">
+<div class="photo-data">Grey and orange squares are the sockets</div>
+
+In general, multiple clients can connect to the same port on the server at the same time, but in the example I'm going to talk about there will be only one server and one client.
+
+<div class="article-section-2"> Sockets </div>
+
+Sockets are "elements" that both Client and Server have. They allow them to communicate with each other over network. Java has two build in classes - Socket - representing client side of connection, and ServerSocket, representing server side. Remember the middle man? The client doesn't send the data directly to the server,
+it does through the socket, also server doesn't get the data from client's socket, but it's socket does. Realising that all the hard work with the connection is done by the socket is super important for the purpose of testing. In the test we don't want to have to run a real server and wait for the real connections,
+we want to mock them. Realising the fact that it's the sockets who are responsible for the interactions leads us straight to the conclusion that in order to test the connection we won't have to mock the whole server and the whole client, only the elements responsible for the connection - the sockets.
+
+<div class="article-section"> How to run the server </div>
+
+I run my server in one terminal window (<code>java path/to/server numberOfPort</code>) and in another I used netcat to connect with the localhost (my machine): <code>nc localhost numberOfPort</code> (I could also use my IP address instead of localhost).
+
+<div class="article-section"> Coding time! </div>
+
+The diagram below represents the structure of my code.
+
+<img src="https://image.ibb.co/fm2GTz/Zrzut_ekranu_2018_08_07_o_11_32_45.png" width="100%">
+
+I have three classess: Main, EchoServer and IOHandler. <br>
+
+<div class="article-section-2"> Main </div>
+
+Main: <br>
+- creates a ServerSocket (SS) - it takes a port number as an argument; <br>
+- instantiates EchoServer with the SS. <br>
+- run()s the EchoServer. <br>
+
+<pre><code>
+public class Main {
+    public static void main(String[] args) throws IOException {
+        ServerSocket serverSocket = new ServerSocket(Integer.parseInt(args[0]));
+        EchoServer echoServer = new EchoServer(serverSocket);
+        echoServer.run();
+    }
+}
+</code></pre>
+
+<div class="article-section-2"> EchoServer </div>
+
+The heart of the EchoServer is the <code>run()</code> method. This method has two main parts to it - <code>try</code> and <code>catch</code>. We put inside the try block a code that might throw an exception. If it doesn't, the catch block won't be activated, if it does, it will. We can create different catches for different types of exceptions, I've created only one for IOException.
+
+In the run() method: <br>
+  <p6>- EchoServer's ServerSocket accepts a connection with client's socket. This method has been extracted to a separate method accept() that returns the accepted socket. Thanks to this operation I can overwrite the Socket returned from accept() in my tests (more about it in the test section).<br>
+  - It creates an IOHandler for this accepted client's socket. IOHandler is responsible for reading from the socket and writing to it.<br>
+  - I call echo() with the IOHandler as an argument. Echo is a loop that constantly checks for any data from client's socket. If there is any that isn't nill, it's printed back to the client's socket.</p6><br><br>
+
+<pre><code>
+public class EchoServer {
+
+    private ServerSocket serverSocket;
+
+    public EchoServer(ServerSocket serverSocket) {
+        this.serverSocket = serverSocket;
+    }
+
+    public Socket accept() throws IOException {
+        return this.serverSocket.accept();
+    }
+
+    public void run() {
+        try {
+        Socket clientSocket = accept();
+        IOHandler iOHandler = new IOHandler(clientSocket);
+        echo(iOHandler);
+        } catch (IOException e) {
+            System.out.println("Exception caught when trying to listen on port");
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private static void echo(IOHandler iOHandler) throws IOException {
+        String inputLine;
+        while ((inputLine = iOHandler.readFromSocket()) != null) {
+            iOHandler.printToSocket(inputLine);
+        }
+    }
+}
+</pre></code>
+
+Let's take a closer look at the echo() method syntax. <br>
+
+First we declate a string called inputLine.<br>
+Then there is a while loop that first sets the inputLine to be the result of iOHandler.readFromSocket() and then we check if it's not null.<br>
+If it's not, we send it back to the client's socket to be printed. <br><br>
+
+This syntax guarantees us that the client's input will be printed only once and out program will wait for next inputs (won't shut down after echoing the first input). <br><br>
+
+This operation can be also written recursively (I like this syntax more, it's easier to read):
+
+<pre><code>
+private static void echo(IOHandler iOHandler) throws IOException {
+    String inputLine = = iOHandler.readFromSocket();
+    while (inputLine != null) {
+        iOHandler.printToSocket(inputLine);
+        echo(iOHandler);
+    }
+}
+</pre></code>
+
+<div class="article-section-2"> IOHandler </div>
+
+The IOHandler accepts the socket as an argument in the constructor. In other words, each client's socket (there will be more in the future :D) will have it's own IOHandler that reads from the socket and prints to the socket.
+
+```java
+public class IOHandler {
+
+    private PrintWriter output;
+    private BufferedReader input;
+
+    public IOHandler(Socket clientSocket) throws IOException {
+        this.output = new PrintWriter(clientSocket.getOutputStream(), true);
+        this.input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+    }
+
+    public void printToSocket(String inputLine) {
+        this.output.println(inputLine);
+    }
+
+    public String readFromSocket() throws IOException {
+        return this.input.readLine();
+    }
+}
+```
+
+  <div class="article-section"> Testing </div>
+
+  <div class="article-section"> Testing the IOHelper </div>
+
+  The purpose of testing the IOHelper is to check if it writes to the socket and reads from it.<br>
+  Remember, IOHelper accepts a Socket as an argument. So first I've tried to test the IOHelper with a real socket. It didn't work - I got the <code> java.net.SocketException: Socket is not connected </code> error. It was because for the real socket to read and write, it needs to be connected to some client to get the data from it/print it to it.<br>
+  In order to overcome this problem, I needed to overwrite the println and readLine() methods so that they read/print a hardcoded stuff instead of getting it from a real client. <br><br>
+
+  For this purpose, I've created a MockSocket class that accepts hardcoded outputStream and inputStream as arguments and then return them on println() or readLine():
+
+<pre><code>
+public class MockSocket extends Socket {
+
+  private final ByteArrayOutputStream output;
+  private final ByteArrayInputStream input;
+
+  public MockSocket(ByteArrayOutputStream outputStream, ByteArrayInputStream inputStream) {
+      this.output = outputStream;
+      this.input = inputStream;
+  }
+
+  @Override
+  public ByteArrayOutputStream getOutputStream() {
+      return output;
+  }
+
+  @Override
+  public ByteArrayInputStream getInputStream() {
+      return input;
+  }
+}
+</pre></code>
+
+I passed this MockSocket that always writes "hello" as input and reads whatever was inputed as an argument to the iOHandler in my test suite:
+
+<pre><code>
+public class IOHandlerTests {
+
+  private ByteArrayOutputStream outputStream;
+  private ByteArrayInputStream inputStream;
+  private MockSocket mockClientSocket;
+
+  @Before
+  public void setup() throws IOException {
+      outputStream = new ByteArrayOutputStream();
+      inputStream = new ByteArrayInputStream("hello".getBytes());
+      mockClientSocket = new MockSocket(outputStream, inputStream);
+  }
+
+  @Test
+  public void printToSocket() throws IOException {
+  IOHandler iOHandler = new IOHandler(mockClientSocket);
+  iOHandler.printToSocket("hello");
+
+  assertEquals("hello", outputStream.toString().trim());
+  }
+
+  @Test
+  public void readFromSocket() throws IOException {
+      IOHandler iOHandler = new IOHandler(mockClientSocket);
+
+      assertEquals("hello", iOHandler.readFromSocket());
+  }
+}
+</pre></code>
+
+<div class="article-section"> Testing the EchoServer </div>
+
+So now I know that my IOHelper is working - it's time for a test for the whole EchoServer.<br><br>
+
+Remember from the code above, the ServerSocket of my EchoServer is responsible for accept()ing a connection and return a client's Socket as a result. <br>
+As we don't want to connect with a real client's socket, we need to mock it. <br>
+
+Remember, .accept() function is called on EchoServer's ServerSocket. Since we don't want to run the server for the purpose of the test, we need to mock the ServerSocket as well. <br><br>
+
+As a result of this whole mocking, the EchoServer will be instantiated with a MockServerSocket instead of a "normal" ServerSocket and the MockServerSocket will override the accept() method. As a result of this overriding, the accept() method won't return a socket that requested the connection, but a MockSocket that has hardcoded input and output streams.<br>
+This is the sode for the MockServerSocket:
+
+<pre><code>
+public class MockServerSocket extends ServerSocket {
+
+  private final ByteArrayInputStream input;
+  private final ByteArrayOutputStream output;
+
+  public MockServerSocket(ByteArrayInputStream inputStream, ByteArrayOutputStream outputStream) throws IOException {
+      this.input = inputStream;
+      this.output = outputStream;
+      }
+
+      @Override
+      public MockSocket accept() {
+          return new MockSocket(this.output, this.input);
+      }
+  }
+}
+</code></pre>
+
+And the test:<br>
+
+<pre><code>
+public class EchoServerTest {
+
+    private EchoServer echoServer;
+    private ByteArrayOutputStream outputStream;
+
+    @Before
+    public void setup() throws IOException {
+        outputStream = new ByteArrayOutputStream();
+        ByteArrayInputStream inputStream = new ByteArrayInputStream("test String".getBytes());
+        MockServerSocket mockServerSocket = new MockServerSocket(inputStream, outputStream);
+        echoServer = new EchoServer(mockServerSocket);
+    }
+
+    @Test
+    public void echo() {
+        echoServer.run();
+        assertEquals("test String", outputStream.toString().trim());
+    }
+}
+</code></pre>
+
+
+<div class="comments">
+  <%- include('../partials/comments-form.ejs', {value: 19}); %>
+  <%- include ../partials/comments-list.ejs %>
+</div>
+
+</main>
+
+<%- include ../partials/footer.ejs %>
