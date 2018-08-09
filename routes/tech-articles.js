@@ -148,4 +148,13 @@ module.exports = function(app) {
       })
     })
   })
+
+  app.get('/tech-articles/echo-server-io', function(req, res) {
+    likesController.count(20).then(function(likesCount) {
+      commentsController.list(20).then(function(comments) {
+      res.render('tech-articles/echo-server-io', {likesCount: likesCount, comments: comments});
+      })
+    })
+  })
+
 }

@@ -1,0 +1,119 @@
+<%- include ../partials/header.ejs %>
+<div class="likes">
+  <%- include('../partials/likes-form.ejs', {value: 20}); %>
+  Likes so far: <%= likesCount %><br>
+  <a href="/"> Back to main page <i class="fas fa-home"></i></a>
+</div>
+
+
+    <main>
+  <div class="article-title">EchoClient in Java</div>
+  <div class="sub-title">Understanding the variety IO classes</div>
+
+  In my last <u><a href="http://tech-and-chips.herokuapp.com/tech-articles/echo-server">post</a></u> I wrote about the server side of an EchoServer and explained how to mock the connection
+  between the server's socket and client's socket for the purpose of tests. <br><br>
+
+  In this note I'm going to talk about the client's side of the EchoServer (EchoClient) and the Java IO classes that I used to write and test it. <br>
+  I'm going to focus on the IO classes only, without discussing EchoClient in general, as the Internet is full of such materials :)
+
+  <div class="article-section"> Types of interactions </div>
+
+  When writing an EchoClient it's important to remember that we have to deal with two different types of interactions:  <br>
+- user and client, <br>
+- client and server. <br><br>
+
+The diagram below illustrates the relevant interactions:
+
+  <img src="https://image.ibb.co/e10bWU/20180809_100527.jpg" width="100%" class="hoverItBig">
+
+  Below I'll analyze them one by one telling what kind of IO classes I used in order to write them,.
+
+  <div class="article-section"> user - client interactions </div>
+
+In order to deal with user - client interactions I've created a StandardIOHandler class which is responsible for getting the user's input from the keyboard and printing it to the console for the user to see. <br>
+StandardIOHandler accepts System.in and System.out as arguments in the constructor.
+
+<div class="article-section-2"> PrintStream and System.out </div>
+
+I already talked about them in this <u><a href="http://tech-and-chips.herokuapp.com/tech-articles/printstream">post</a></u>. This is just a summary of that other note. <br><br>
+
+  PrintStream is a Java class that prints the data to a specific place of output. <br>
+  This place is specified in an argument we pass when we create an PrintStream instance.<br>
+  PrintStream has many handy methods like eg. println.<br>
+  System.out, that is widely used to print data to the console, is an instance of PrintStream.<br>
+  It means that we can call PrintStream methods on it (eg. System.out.println).<br><br>
+
+  Even though instances of PrintStream generally need an argument pointing to the place to which we want to stream output.<br>
+  System.out doesn't need it - it just knows that it prints to the console.<br>
+
+  <div class="article-section-2"> InputStream and System.in </div>
+
+  I already talked about them in this <u><a href="http://tech-and-chips.herokuapp.com/tech-articles/inputstream">post</a></u>. This is just a summary of that other note. <br><br>
+
+  InputStream is a Java class that is a superclass of all other classes which represent an input stream of bytes.<br>
+  As System.out was an instance of PrintStream, System.in is an instance of type InputStream. <br>
+  We can think of System.in as a method to get the data from the user to our program through the console.<br>
+
+  <div class="article-section-2"> InputStreamReader and BufferedReader </div>
+
+  System.in returns us the data that user entered through the console, but the data is in form of bytes. <br>
+  As we usually want to get the actual text entered by the user, we need to convert what System.in returns into
+  a readable format. In order to do it, we use combination of: <br>
+
+  <pre><code>
+new BufferedReader(new InputStreamReader(InputStream))
+</code></pre>
+
+  First, the InputStreamReader reads bytes and decodes them into characters using a specified charset.<br>
+  Then it's <u><a href="https://docs.oracle.com/javase/7/docs/api/java/io/InputStreamReader.html">recommended</a></u>
+  to use BufferedReader (wrap an InputStreamReader within a BufferedReader) in order to enable the efficient conversion of bytes to characters.
+
+  <div class="article-section"> client - server interactions </div>
+
+  In order to deal with client - server interactions I've created a SocketIOHandler class. In this case we're not dealing with input coming from System.in and output being printed to user's screen, but we wan't to print to a client's socket and read from it.
+
+  <div class="article-section-2"> PrintWriter </div>
+
+  PrintWriter is a Java class that prints formatted representations of objects to a text-output stream. <br>
+  This class implements all of the print methods found in PrintStream. <br>
+  In other words, if we want to print something to a stream, we call:<br>
+  <pre><code>
+streamPrinter = new PrintWriter(codeGettingTheStream);
+streamPrinter.println(inputToBePrinted);
+</code></pre>
+
+  and this way we print content to a stream. <br>
+
+  <div class="article-section"> Interactions and IO classes diagram </div>
+
+  This diagram illustrated how and where I used Java IO classes:
+
+    <img src="https://image.ibb.co/habrWU/20180809_105613.jpg" width="100%" class="hoverItBig">
+
+  <div class="article-section"> Mocking input and output streams </div>
+
+  There are two more classes that I used which are ByteArrayOutputStream and ByteArrayInputStream. <br><br>
+
+  I used ByteArrayOutputStream in order to "catch" the output stream - instead of printing it to a screen / printing it to a socket,
+  I redirected it to the ByteArrayOutputStream which wrote the data into byte array. The data can be retrieved using toByteArray() and toString().<br><br>
+
+  I used ByteArrayInputStream in order to mock input - both in case of user input from the keyboard and in case of input that came from server's socket.
+  Instead of getting input from these places, I hardcoded it myself:
+  <pre><code>
+  new ByteArrayInputStream("test Input".getBytes());
+</code></pre>
+
+The diagram below illustrates the mocks:
+
+    <img src="https://image.ibb.co/eD575p/20180809_105839.jpg" width="100%" class="hoverItBig">
+
+
+
+<div class="comments">
+  <%- include('../partials/comments-form.ejs', {value: 20}); %>
+  <%- include ../partials/comments-list.ejs %>
+</div>
+
+</main>
+
+<%- include ../partials/footer.ejs %>
