@@ -18,3 +18,4 @@ CLJS setup: 17
 CLJS syntax 18
 echo-server 19
 echo-server-io 20
+pairing-1 21

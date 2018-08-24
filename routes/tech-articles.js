@@ -157,4 +157,12 @@ module.exports = function(app) {
     })
   })
 
+  app.get('/tech-articles/pairing-1', function(req, res) {
+    likesController.count(21).then(function(likesCount) {
+      commentsController.list(21).then(function(comments) {
+      res.render('tech-articles/pairing-1', {likesCount: likesCount, comments: comments});
+      })
+    })
+  })
+
 }
