@@ -165,4 +165,11 @@ module.exports = function(app) {
     })
   })
 
+  app.get('/tech-articles/python-postgres', function(req, res) {
+    likesController.count(22).then(function(likesCount) {
+      commentsController.list(22).then(function(comments) {
+      res.render('tech-articles/python-postgres', {likesCount: likesCount, comments: comments});
+      })
+    })
+  })
 }

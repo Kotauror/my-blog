@@ -1,0 +1,100 @@
+<%- include ../partials/header.ejs %>
+<div class="likes">
+  <%- include('../partials/likes-form.ejs', {value: 22}); %>
+  Likes so far: <%= likesCount %><br>
+  <a href="/"> Back to main page <i class="fas fa-home"></i></a>
+</div>
+
+    <main>
+  <div class="article-title">Python - Flask - Postgres </div>
+  <div class="sub-title">Connecting the dots and squashing bugs</div>
+
+  <div class="article-section"> Introduction </div>
+
+For the past two weeks I've been working on a Python Flask Web App that shows, adds, deletes and edits contacts (contact manager app).
+In this note I'm planning to talk about a few python-specific issues I've encountered while working on this task - maybe it will help you to develop your projects easier.
+
+<div class="article-section"> Flask vs Django </div>
+There are two main python frameworks that help to build and run projects: Flask and Django. If you know Ruby, Flask can be easily compared to Sinatra, while Django is like Rails. Both Django and Rails make it very (extremely) easy to setup a project with db and make some basic CRUD manipulations,
+but when you want some flexibility they make it hard to implement changes. In other words: as long as you follow Django and Rails guidlines you'll do fine, but the moment you want something different it starts to get much harder. As my mentors wanted me to start the project without any database (data was disappearing each time I turned off the server)
+and add it later, I've decided to go with Flask as it provides more flexibility. It was a good choice - Flask provided me with all tools necessary to develop a simple webapp without the need to use a complex (Django-like) architecture.
+
+<div class="article-section"> God bless packages </div>
+I've started my project using only three packages: flask, pytest and selenium. By the end the number of depencensies reached 23 including: Flask-Script, Flask-SQLAlchemy, psycopg2, pytest-env and SQLAlchemy (an awesome ORM!). You can find the whole list <a href="https://github.com/Kotauror/contacts_manager/blob/master/requirements.txt"><u>here</u></a>.
+They made database operations and changing environments from test to development smooth and easy. I highly recommend googling every issue you encounter - there is high chance there is a renowned package that will help you to solve it.
+
+<div class="article-section"> Adding database to the project - where to start, how to configure the project</div>
+Start with creating the database. I did it manually:<br>
+- open psql posgres in command line <br>
+- type CREATE DATABASE name; <br>
+and it's done! I recommend you to add a testing database in this step as well (you will use it in the tests - you don't want your tests to pollute your "real" database, right?)<br><br>
+
+Once I had the database, I needed to link it to my project. I've created three modules:<br><br>
+1. Config: <br>
+<pre><code>
+import os
+
+class BaseConfig():
+    SQLALCHEMY_DATABASE_URI = os.environ.get(
+        'DATABASE_URI', 'postgresql://localhost/contacts')
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+class DevelopmentConfig(BaseConfig):
+    DEBUG = True
+
+class TestConfig():
+    TESTING = True
+<br>
+</code></pre>
+2. Create_app: <br>
+<pre><code>
+from flask import Flask
+import config
+
+def create_app(app_config):
+    app = Flask(__name__)
+    app.config.from_object(app_config)
+    return app
+</code></pre>
+<br>
+3. Settings: <br>
+<pre><code>
+import os
+import config
+from create_app import create_app
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+
+app = create_app(config.DevelopmentConfig)
+db = SQLAlchemy(app)
+</code></pre>
+<br>
+Config is the most basic one - it doesn't import other modules but is imported by them. In here I've defined three different environments and their characteristics. <br>
+The environment is then passed in create_app to configure it (<code>app.config.from_object(app_config)</code>). <br>
+The app is available in settings file. In this file I've also created the database. From here you can use app and db in all the places!<br><br>
+<div class="article-section-2"> Object is already attached to session '1' (this is '2') </div>
+This operation of having both app and db in one module that is later imported in other modules helped me a lot! You see, Python has huge issues with Cirular Imports (read <u><a href="https://stackabuse.com/python-circular-imports/"> here</a></u>) that may cause you many problems.
+Therefore it's better to have only one place from which other modules import vital components. The error it caused me was: "Object is already attached to session '1' (this is '2')". Because of the circular import I ended up having a few apps and databases created! Delegating that to one module solved the issue.
+
+<div class="article-section">Changing environment (pytest-env, python.ini)</div>
+I've already mentioned the need to change environment for the purpose of tests in order to not pollute our "main" database (for me - the development db). Python has an awesome package to deal with it: <code>pytest-env</code> that allows us to set the environment for tests. In order to do it I: <br>
+- created a pytest.ini file - pytest goest there before running the tests (read more: <u><a href="https://docs.pytest.org/en/3.0.2/customize.html">here</u></a>). Therefore it was a great place to set the enviroment for tests. <br>
+- inside of that file I wrote:
+<pre><code>
+[pytest]
+env =
+  DATABASE_URI = postgresql://localhost/contacts_test
+</code></pre>
+Accoring to this code, each time the test sees <code>DATABASE_URI</code>, it will connect with this db: <code>postgresql://localhost/contacts_test</code>. Awesome!
+<div class="article-section">Virtual environent</div>
+Another fancy Python thing is virtual environment - self-contained directory tree that contains a Python installation for a particular version of Python, plus a number of additional packages used in the project. In other words - if you download my project with it's virtual environment, you don't have to have all of the packages installed to run it.
+You should just be able to activate the environment and all necessary packages will be there! In order to create an environment type <code>virtualenv name_of_environment </code>at the root of your project. In order to activate it, enter <code>name_of_environment/bin</code> and run <code>. activate</code> in the command line.
+
+<div class="comments">
+  <%- include('../partials/comments-form.ejs', {value: 22}); %>
+  <%- include ../partials/comments-list.ejs %>
+</div>
+
+</main>
+
+<%- include ../partials/footer.ejs %>

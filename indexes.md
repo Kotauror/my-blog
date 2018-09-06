@@ -19,3 +19,4 @@ CLJS syntax 18
 echo-server 19
 echo-server-io 20
 pairing-1 21
+python-postgres 22
