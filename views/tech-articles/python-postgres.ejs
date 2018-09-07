@@ -13,30 +13,80 @@
 
 For the past two weeks I've been working on a Python Flask Web App that shows, adds, deletes and edits contacts (contact manager app).
 In this note I'm planning to talk about a few python-specific issues I've encountered while working on this task - maybe it will help you to develop your projects easier.
+Because this note covers many issues, here is a table of contacts to help you handle the randomness: <br><br>
+- Flask vs Django <br>
+- God bless the packages <br>
+- Create databases and tables <br>
+- Linking the databases to the project<br>
+- Solving the <i>Object is already attached to session '1' (this is '2')</i> error <br>
+- Changing environments (pytest-env, python.ini) <br>
+- Virtual environent<br>
+- Importing files from different directories
 
 <div class="article-section"> Flask vs Django </div>
-There are two main python frameworks that help to build and run projects: Flask and Django. If you know Ruby, Flask can be easily compared to Sinatra, while Django is like Rails. Both Django and Rails make it very (extremely) easy to setup a project with db and make some basic CRUD manipulations,
-but when you want some flexibility they make it hard to implement changes. In other words: as long as you follow Django and Rails guidlines you'll do fine, but the moment you want something different it starts to get much harder. As my mentors wanted me to start the project without any database (data was disappearing each time I turned off the server)
-and add it later, I've decided to go with Flask as it provides more flexibility. It was a good choice - Flask provided me with all tools necessary to develop a simple webapp without the need to use a complex (Django-like) architecture.
+Flask and Django are two of the most popular web frameworks for Python. If you know Ruby, Flask can be easily compared to Sinatra, while Django is like Rails. Both Django and Rails make it very easy to setup a project with a database and make some basic CRUD operations,
+but when you want some flexibility they make it hard to implement changes. In other words: as long as you follow Django and Rails guidlines you'll do fine, but the moment you want something different it starts to get much harder. <br>
+As my mentors wanted me to start the project without any database (data was disappearing each time I turned off the server)
+and add it later, I've decided to go with Flask as it provides more flexibility and all tools necessary to develop a simple webapp (first without, later with a database) without the need to use a complex (Django-like) architecture.
 
-<div class="article-section"> God bless packages </div>
-I've started my project using only three packages: flask, pytest and selenium. By the end the number of depencensies reached 23 including: Flask-Script, Flask-SQLAlchemy, psycopg2, pytest-env and SQLAlchemy (an awesome ORM!). You can find the whole list <a href="https://github.com/Kotauror/contacts_manager/blob/master/requirements.txt"><u>here</u></a>.
-They made database operations and changing environments from test to development smooth and easy. I highly recommend googling every issue you encounter - there is high chance there is a renowned package that will help you to solve it.
+<div class="article-section"> God bless the packages </div>
+I've started my project using only three packages: flask, pytest and selenium. By the end the number of packs reached 23 including: <br>
+- Pip: Python package manager, you just need it.
+- SQLAlchemy: Python SQL toolkit and Object Relational Mapper that makes operations with database much easier; <br>
+- Flask-SQLAlchemy: an extension for Flask that adds support for SQLAlchemy to your application; <br>
+- psycopg2: PostgreSQL adapter for the Python; <br>
+- pytest-env: enables you to set environment variables in the pytest.ini file;
+- Werkzeug: comprehensive web application library (see the utilities <a href="https://pypi.org/project/Werkzeug/"><u>here</a></u>).<br>
+ You can find the whole list <a href="https://github.com/Kotauror/contacts_manager/blob/master/requirements.txt"><u>here</u></a>.
+They made my work smooth and easy. I highly recommend googling more complicated issue you encounter - there is high chance there is a renowned AND RELIABLE package that will help you solve it.
 
-<div class="article-section"> Adding database to the project - where to start, how to configure the project</div>
-Start with creating the database. I did it manually:<br>
-- open psql posgres in command line <br>
-- type CREATE DATABASE name; <br>
-and it's done! I recommend you to add a testing database in this step as well (you will use it in the tests - you don't want your tests to pollute your "real" database, right?)<br><br>
+<img src="https://i.imgflip.com/2heqk9.jpg" width="100%">
 
-Once I had the database, I needed to link it to my project. I've created three modules:<br><br>
+<div class="article-section"> Adding database to the project</div>
+<div class="article-section-2"> Create databases and tables </div>
+
+Let's start with creating the database. In order to follow the steps below, you need to install postgresql. And the steps are:<br>
+- type <code>psql posgres</code> in command line <br>
+- type <code>CREATE DATABASE name;</code> <br>
+BOOM - it's done! <br>
+I recommend you to add a testing database in this step as well (you will use it in the tests - you don't want your tests to pollute your "real" database, right?).<br><br>
+I didn't create the table manually in my development database, I've just linked the db to my model and defined the tables there:
+<pre><code>
+import sys
+sys.path.append('../')
+from settings import db
+
+class Contact(db.Model): <=== set the Contact class to be a table in the db.
+
+  id = db.Column(db.Integer, primary_key=True)  <==== table column
+  name = db.Column(db.String(80), unique=True) <==== table column
+  telephone = db.Column(db.String(120), unique=True) <==== table column
+
+  def __init__(self, name, telephone):
+      self.name = name
+      self.telephone = telephone
+
+  def __repr__(self):
+      return '<User %r>' % self.name
+</code></pre>
+And then I've opened python on the root and typed:<br>
+- <code> from settings import db </code> - to import the db. <br>
+- <code> db.create_all() </code> - this created the table for me.<br><br>
+
+I've created the test table manually (using SQL). <br><br>
+
+P.S. At the beginning I was checking the database after each operation to make sure that my program is working properly. You can do it by connecting to the database via postgres and typing <code>SELECT * FROM table_name;</code><br>
+
+<div class="article-section-2"> Linking the databases to the project </div>
+
+Once I had the databases, I needed to link it to my project. In order to do it, I've created three modules:<br><br>
 1. Config: <br>
 <pre><code>
 import os
 
 class BaseConfig():
     SQLALCHEMY_DATABASE_URI = os.environ.get(
-        'DATABASE_URI', 'postgresql://localhost/contacts')
+        'DATABASE_URI', 'postgresql://localhost/contacts')  <= my database created in the step above
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 class DevelopmentConfig(BaseConfig):
@@ -46,6 +96,10 @@ class TestConfig():
     TESTING = True
 <br>
 </code></pre>
+
+Config is the most basic module in my project - it doesn't import other modules but is imported by them.
+In here I've defined three different environments and their characteristics. <br>
+<br>
 2. Create_app: <br>
 <pre><code>
 from flask import Flask
@@ -56,6 +110,8 @@ def create_app(app_config):
     app.config.from_object(app_config)
     return app
 </code></pre>
+
+The environment from config is then imported in <code>create_app</code> module and passed to app in order to configure it (<code>app.config.from_object(app_config)</code>). <br>
 <br>
 3. Settings: <br>
 <pre><code>
@@ -68,27 +124,83 @@ from flask_sqlalchemy import SQLAlchemy
 app = create_app(config.DevelopmentConfig)
 db = SQLAlchemy(app)
 </code></pre>
-<br>
-Config is the most basic one - it doesn't import other modules but is imported by them. In here I've defined three different environments and their characteristics. <br>
-The environment is then passed in create_app to configure it (<code>app.config.from_object(app_config)</code>). <br>
-The app is available in settings file. In this file I've also created the database. From here you can use app and db in all the places!<br><br>
-<div class="article-section-2"> Object is already attached to session '1' (this is '2') </div>
-This operation of having both app and db in one module that is later imported in other modules helped me a lot! You see, Python has huge issues with Cirular Imports (read <u><a href="https://stackabuse.com/python-circular-imports/"> here</a></u>) that may cause you many problems.
-Therefore it's better to have only one place from which other modules import vital components. The error it caused me was: "Object is already attached to session '1' (this is '2')". Because of the circular import I ended up having a few apps and databases created! Delegating that to one module solved the issue.
+
+The app is created and made available to the rest of the app in the settings file. In this file I've also created the database.
+This is the only place in the app from which I import the app and database.
+
+<div class="article-section-2"> Solving the <i>Object is already attached to session '1' (this is '2')</i> error </div>
+The operation of having both app and database in one module that is later imported in other modules helped me a lot!
+You see, Python has a huge issues with Cirular Imports (read <u><a href="https://stackabuse.com/python-circular-imports/"> here</a></u>) that may cause you many problems and errors that are hard to understand.
+The error it caused me was: <code>"Object is already attached to session '1' (this is '2')"</code>. At some point I even got an error saying <code>"Object is already attached to session '4' (this is '7')"</code>.
+<img src="https://i.kym-cdn.com/photos/images/original/001/104/065/3e4.png" width="100%">
+Even though the error doesn't suggest it, it was caused by the circular import. Because at some point the files were importing each other,
+I ended up having a few apps and databases created... Extracting app and db to one module solved the issue.
 
 <div class="article-section">Changing environment (pytest-env, python.ini)</div>
-I've already mentioned the need to change environment for the purpose of tests in order to not pollute our "main" database (for me - the development db). Python has an awesome package to deal with it: <code>pytest-env</code> that allows us to set the environment for tests. In order to do it I: <br>
-- created a pytest.ini file - pytest goest there before running the tests (read more: <u><a href="https://docs.pytest.org/en/3.0.2/customize.html">here</u></a>). Therefore it was a great place to set the enviroment for tests. <br>
-- inside of that file I wrote:
+I've already mentioned the need to change environment for the purpose of tests in order to not pollute our "main" database. Python has an awesome package to deal with it: <code>pytest-env</code> that allows us to set the environment for tests. Setting the environment step by step: <br>
+- create a pytest.ini file - pytest goest there before running the tests (read more: <u><a href="https://docs.pytest.org/en/3.0.2/customize.html">here</u></a>). Therefore it was a great place to set the enviroment for tests. <br>
+- inside of that file write:
 <pre><code>
 [pytest]
 env =
   DATABASE_URI = postgresql://localhost/contacts_test
 </code></pre>
-Accoring to this code, each time the test sees <code>DATABASE_URI</code>, it will connect with this db: <code>postgresql://localhost/contacts_test</code>. Awesome!
+Accoring to this code, each time the test sees <code>DATABASE_URI</code> (for example in the settings file - see above), it will connect with this db: <code>postgresql://localhost/contacts_test</code>. Awesome!
 <div class="article-section">Virtual environent</div>
 Another fancy Python thing is virtual environment - self-contained directory tree that contains a Python installation for a particular version of Python, plus a number of additional packages used in the project. In other words - if you download my project with it's virtual environment, you don't have to have all of the packages installed to run it.
 You should just be able to activate the environment and all necessary packages will be there! In order to create an environment type <code>virtualenv name_of_environment </code>at the root of your project. In order to activate it, enter <code>name_of_environment/bin</code> and run <code>. activate</code> in the command line.
+<div class="article-section">Importing files from different directories</div>
+Python is a great language, but importing files between directories really su*ks. Like really. Python only searches the current directory and because of it you need to increase the <code>sys.path</code> to allow it looking in another directories. You can do it in different ways:<br>
+1. sys.path.insert<br>
+You can add a directory to sys.path by entering:
+<pre><code>
+import sys
+sys.path.insert(0, 'pathToFolder')
+
+import file
+</code></pre>
+This code will add the pathToFolder to the sys.path (eg. <code>sys.path.insert(0, 'src')</code>)<br><br>
+2. sys.path.append('../')<br>
+If you have files in different directories on parallel levels, you can use:
+<pre><code>
+import sys
+sys.path.append('../')
+
+import file
+</code></pre><br>
+3. __init__.py<br>
+Add __init__.py files to the directory from each you want to import. The __init__.py files are required to make Python treat the directories as containing packages. Example from python documentation:
+<pre><code>
+  sound/                          Top-level package
+      __init__.py               Initialize the sound package
+      formats/                  Subpackage for file format conversions
+              __init__.py
+              wavread.py
+              wavwrite.py
+              aiffread.py
+              aiffwrite.py
+              auread.py
+              auwrite.py
+              ...
+      effects/                  Subpackage for sound effects
+              __init__.py
+              echo.py
+              surround.py
+              reverse.py
+              ...
+      filters/                  Subpackage for filters
+              __init__.py
+              equalizer.py
+              vocoder.py
+              karaoke.py
+              ...
+</code></pre>
+
+<div class="article-section">It's not all.</div>
+There are many more things I could talk about here, my favourites include dealing with db.sessions (and the need to commit!),
+setup and teardown of databases in tests and targeting changes in specific divs in front-end tests. <br><br>
+
+It was an important week for me - I've made a progress in DevOps - the one area I was always the most afraid of. You know, the devil’s not so black as he is painted<br>
 
 <div class="comments">
   <%- include('../partials/comments-form.ejs', {value: 22}); %>
