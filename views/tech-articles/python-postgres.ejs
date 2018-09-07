@@ -134,7 +134,8 @@ You see, Python has a huge issues with Cirular Imports (read <u><a href="https:/
 The error it caused me was: <code>"Object is already attached to session '1' (this is '2')"</code>. At some point I even got an error saying <code>"Object is already attached to session '4' (this is '7')"</code>.
 <img src="https://i.kym-cdn.com/photos/images/original/001/104/065/3e4.png" width="100%">
 Even though the error doesn't suggest it, it was caused by the circular import. Because at some point the files were importing each other,
-I ended up having a few apps and databases created... Extracting app and db to one module solved the issue.
+I ended up having a few apps and databases created... Extracting app and db to one module solved the issue.<br>
+The StackOverflow thread that helped me a lot can be <u><a href="https://stackoverflow.com/questions/17127922/cant-delete-row-from-sqlalchemy-due-to-wrong-session">here</u></a>.
 
 <div class="article-section">Changing environment (pytest-env, python.ini)</div>
 I've already mentioned the need to change environment for the purpose of tests in order to not pollute our "main" database. Python has an awesome package to deal with it: <code>pytest-env</code> that allows us to set the environment for tests. Setting the environment step by step: <br>
