@@ -1,0 +1,245 @@
+<%- include ../partials/header.ejs %>
+<div class="likes">
+  <%- include('../partials/likes-form.ejs', {value: 23}); %>
+  Likes so far: <%= likesCount %><br>
+  <a href="/"> Back to main page <i class="fas fa-home"></i></a>
+</div>
+
+    <main>
+  <div class="article-title">Adding React on the frondend to a Python backend application</div>
+  <div class="sub-title">Beware over-automation</div>
+
+  <div class="article-section"> Introduction </div>
+
+  I had a python contacts manager application which allowed me to add, delete and edit contacts. My mentors at 8th Light asked me to start using React on the frontend.
+  I wanted to keep the whole code of mine on the backend while adding react on the frontend.<br><br>
+  I didn't want to initialize a new app (what seemed to be the easiest solution btw.) but learn how to use the codebase I already had.<br><br>
+
+  Before I start with explaining the process I've (finally) taken, I would like to briefly talk about my other approaches to this problem that didn't work well.
+
+  <div class="article-section"> Approaches that didn't work for me </div>
+  <div class="article-section-2"> Very manual - do (almost) all the stuff on my own </div>
+
+  TL;DR: It didn't work well because of the need of translating the JS from ES5 to ES6 every time I made a change. <br><br>
+
+  I've installed all the packages needed for react app (<code>react</code>, <code>react-dom</code>) using <code>npm install</code>.<br><br>
+
+   I wrote some React code using ES5 syntax and quickly added it to my code.
+  I've followed this official React tutorial - Add React in One minute <u><a href="https://reactjs.org/docs/add-react-to-a-website.html">available here</a></u>. It's possible to write React in without ES6,
+  the official documentation explains how <u><a href="https://reactjs.org/docs/react-without-es6.html">here</a></u>. <br><br>
+
+  The problem was that writing in non-ES6 JS produces a much uglier, longer and harder to read code.
+  Also, most of the materials online are in ES6, so using this syntax would make easier to me to find some answers online. <br> <br>
+
+  So I've decided I'll write my code in ES6 forgetting that the browsers don't understand it!
+  As a result, I've got an <code>Uncaught SyntaxError: Unexpected identifier</code> error in my first ES6 line - <code>import React from `react`</code>. <br>
+
+  <img src="https://i.imgflip.com/1o12mo.jpg" width="100%">
+
+  The solution to this is Babel - a compiler that translates ES6 to oldschool JS (https://babeljs.io/). I've tried to add it manually and reached a point where babel was translating a file.
+  The problem was that nothing was automated - I needed to translate the documents after each change what would make the development process much much longer.
+  As the setup is very important and influences the future works a lot, I've decided to spend some time and try again, this time in a more automated way.
+
+  <div class="article-section-2"> Super Automated - trust the magic </div>
+
+  TL;DR: I had no idea how my own program works because of the magic connected to <code>create-react-app</code> npm pack that I've used.<br><br>
+
+    So there is the npm package called <code>create-react-app</code> and it's just magical - it does all of the stuff for you.
+  You don't need to install and setup babel, you don't write a webpack, you don't have to run anything else than <code>npm start</code> to make your React written in ES6 appear on a server that this plugin writes for you as well.
+  <u><a href="https://github.com/Kotauror/giftgiver">Here</a></u> you can find a repo with my React app written using this package. <br><br>
+
+  It was so smooth and easy that I came up with an amazing (I thought) idea of creating a react app using this magical tool inside of my python app and then remove everything that I don't need like the node server (I already had python server).
+  God, how proud I was of this tricky idea - It's going to solve all my problems I thought. Nope, it didn't. It's so magical and automated (ie. does everything for you), that I just couldn't adjust it to my app and the existing folder structure.
+  So I tried another way.
+
+  <img src="https://2ch.hk/b/src/182211404/15356063467790.png" width="100%">
+
+  <div class="article-section"> Approach that worked - conscious automation </div>
+
+  I've followed <a href="https://codeburst.io/creating-a-full-stack-web-application-with-python-npm-webpack-and-react-8925800503d9"><u>this</a></u> blogpost and added my own improvements.<br><br>
+
+1.   As the first step, I've moved all the code I've written so far into a <code>server</code> directory in order to make
+  the whole file structure more readable. I've started with the following directories structure:
+
+  <code><pre>
+  .
+  ├── README.md
+  ├── .gitignore
+  └── server/    -------> my old python code
+  └── static/
+      └── js/
+        ├── components/
+      └── styles/
+  </pre></code>
+  2. I've initialized npm to create package.json file (<code>npm init</code>).<br><br>
+  3. I've installed webpack as a dev dependency. Webpack takes all your module dependencies and generates static assets that represent them. In other words, it will take all my ES6 javascript files and bundle them into one file - bundle.js. <br><br>
+  4. Using webpack requires a webpack.config file. The config tells webpack where to find the Javascript and React files, and where to put the generated Javascript bundle.
+  I've placed it in the <code>static</code> directory which is basically the root for all my front-end stuff.
+
+  <code><pre>
+const webpack = require('webpack');
+const config = {
+    entry:  __dirname + '/js/index.js',       -----> Where it takes the js code that it's going to bundle
+    output: {
+        path: __dirname + '/dist',            -----> Where it will place the bundled .js file (the dist directory will be created automatically)
+        filename: 'bundle.js',
+    },
+    resolve: {
+        extensions: ['.js', '.js', '.css']
+    },
+};
+module.exports = config;
+</pre></code>
+  5. I've added a few run commands (scripts) to my package.json:<br>
+  - Build is used for production builds, and dev-build for non-minified builds.<br>
+  - Watch is similar to dev-build, with the added benefit that it monitors your project files. Watch is just awesome - any changed files will be automatically rebuilt, and it will refresh your browser will show the change you just made. I also helps with debugging - it shows you errors in frontend build!
+  I use watch the whole time! I keep the <code>npm watch</code> command running in one terminal window what ensures me that the code will be refreshed automatically.
+
+  <code><pre>
+"scripts": {
+  "build": "webpack -p --progress --config webpack.config.js",
+  "dev-build": "webpack --progress -d --config webpack.config.js",
+  "test": "echo \"Error: no test specified\" && exit 1",
+  "watch": "webpack --progress -d --config webpack.config.js --watch"
+}
+</pre></code>
+  6. Adding babel support. Webpack itself just bundles all javascript into one file. But we don't only want to bundle it - we want to translate it from ES6 and then bundle it.
+  By installing the es2015 and react presets, Babel converts our Javascript and React jsx files into Javascript syntax compatible with all modern browsers.
+  To install babel type:
+  <code><pre>
+$ npm i babel-core babel-loader babel-preset-es2015 babel-preset-react --save-dev
+</pre></code>
+  Add the Babel presets to the package.json:
+<code><pre>
+“babel”: {
+  “presets”: [
+    “es2015”,
+    “react”
+  ]
+},
+</pre></code>
+7. Add a babel-loader rule to the Webpack config. It will ensure that the files are not only bundled, but also translated.
+<code><pre>
+module: {
+  rules: [
+    {
+      test: /\.jsx?/,
+      exclude: /node_modules/,
+      use: 'babel-loader'
+    }
+  ]
+}
+</pre></code>
+8. In the static folder create the following index.html file:
+<code><pre>
+< html>
+  < head>
+    < meta charset="utf-8">
+  < /head>
+  < body>
+    < div id="content" />
+    < script src="dist/bundle.js" type="text/javascript"></script>   // <----- it links the bundled .js file the webpack created!
+  < /body>
+< /html>
+</pre></code>
+9. In the static/js folder, create an index.js file with the following line:
+<code><pre>
+alert(“Hello World!”);
+</pre></code>
+10. Start the Webpack watch command we just created in a separate terminal tab. This means it can run in the background whilst we continue working. It should build your bundle without errors.
+
+<code><pre>
+$ npm run watch
+</pre></code>
+Open the index.html file in your browser of choice. It should show an alert saying “Hello World!”.<br><br>
+
+11. Install react
+
+<code><pre>
+$ npm i react react-dom --save-dev
+</pre></code>
+12. Next we replace the alert in the index.js with a simple React app. It will load a class from App component.
+
+<code><pre>
+// index.jsx
+import React from "react";
+import ReactDOM from "react-dom";
+import App from "./App";
+ReactDOM.render(<App />, document.getElementById("content"));
+</pre></code>
+
+13. Create App component in components directory in the js folder:
+
+<code><pre>
+// App.jsx
+import React from “react”;
+export default class App extends React.Component {
+  render () {
+    return <p> Hello React!</p>
+  }
+}
+</pre></code>
+
+14. Add a route to the server to show this website. In my app.py file I've added a new route:
+
+<code><pre>
+@app.route('/', methods=['GET'])
+def testRoute():
+    return render_template("index.html")
+  </pre></code>
+On the `/` path, I want my server to render the index.html created above, the one that links the bundle.js file. The problem was that my server was looking for static (html) files in the server directory, not in the static one.
+In order to fix it, I needed to tell my app where to find the html files. In order to do it, I've added the following code to my create_app.py file:
+<code><pre>
+static_folder="../static/dist", template_folder="../static"
+</code></pre>
+The whole file looks like this:
+
+<code><pre>
+from flask import Flask
+import config
+
+def create_app(app_config):
+    app = Flask(__name__, static_folder="../static/dist", template_folder="../static")
+    app.config.from_object(app_config)
+    return app
+  </pre></code>
+
+15. Adding tests. I've added the following packages to my package.json:
+<code><pre>
+"enzyme": "^3.6.0",
+"enzyme-adapter-react-16": "^1.5.0",
+"jest-cli": "^20.0.4"
+</pre></code>
+
+In the components folder I've created a <code>__tests__</code> directory where I've placed my App.test.js file with a simple snapshot test:
+
+<code><pre>
+import React from 'react';
+import Enzyme, { shallow } from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
+
+Enzyme.configure({adapter: new Adapter()});
+
+import App from '../App';
+
+
+describe('App', () => {
+  const app = shallow(<App />);
+
+  it('renders correctly', () => {
+    expect(app).toMatchSnapshot();
+  });
+});
+</pre></code>
+I run the <code>jest -u</code> command to run the test from anywhere in the `static` directory.
+
+
+
+<div class="comments">
+  <%- include('../partials/comments-form.ejs', {value: 23}); %>
+  <%- include ../partials/comments-list.ejs %>
+</div>
+
+</main>
+
+<%- include ../partials/footer.ejs %>

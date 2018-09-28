@@ -172,4 +172,12 @@ module.exports = function(app) {
       })
     })
   })
+
+  app.get('/tech-articles/add-react-to-python', function(req, res) {
+    likesController.count(23).then(function(likesCount) {
+      commentsController.list(23).then(function(comments) {
+      res.render('tech-articles/add-react-to-python', {likesCount: likesCount, comments: comments});
+      })
+    })
+  })
 }
