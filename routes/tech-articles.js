@@ -180,4 +180,12 @@ module.exports = function(app) {
       })
     })
   })
+
+  app.get('/tech-articles/react-jest-mock', function(req, res) {
+    likesController.count(24).then(function(likesCount) {
+      commentsController.list(24).then(function(comments) {
+      res.render('tech-articles/react-jest-mock', {likesCount: likesCount, comments: comments});
+      })
+    })
+  })
 }

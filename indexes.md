@@ -21,3 +21,4 @@ echo-server-io 20
 pairing-1 21
 python-postgres 22
 add-react-to-python: 23
+react-jest-mock: 24

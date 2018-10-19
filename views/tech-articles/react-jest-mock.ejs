@@ -1,0 +1,132 @@
+<%- include ../partials/header.ejs %>
+<div class="likes">
+  <%- include('../partials/likes-form.ejs', {value: 24}); %>
+  Likes so far: <%= likesCount %><br>
+<a href="/"> Back to main page <i class="fas fa-home"></i></a>
+</div>
+
+
+  <main>
+
+    <div class="article-title">Manual mocks in Jest</div>
+    <div class="sub-title">Using manual mocks in Jest tests</div>
+
+    <div class="article-section"> Introduction </div>
+
+In this note I'm going to briefly describe how to do manual mocking using Jest. I'll do it on an example of a React app that makes an API call.
+
+<div class="article-section"> My app </div>
+
+My app has a Python backend and a React frontend. It allows users to take CRUD actions via a website and stors results of the actions in a Postgres database.
+The diagram below illustrates the app's architecture.
+
+<img src="https://camo.githubusercontent.com/9b9f579d926b205e58dab7a9d8927b212e2017cb/68747470733a2f2f696d6167652e6962622e636f2f6676327147702f5a727a75745f656b72616e755f323031385f30395f32355f6f5f31355f34395f34332e706e67" width="100%" class="hoverItBig">
+The code is available on GitHub <u><a href="https://github.com/Kotauror/contacts_manager">here</a></u>.
+
+
+<div class="article-section"> Extracting the API logic to a separate module </div>
+
+Before moving to the topic of testing I would like to briefly discuss the decision of extracting the whole API-related logic to a separate module <code>Api.js</code>, as you can see on the diagram above.
+This operation has its downsides and upsides.<br><br>
+On the downside, it's not the most "reacty" React design ever seen. There are many React developers who like to keep all the
+functionalities related to a specific component in this component file. For example, if there is a form component responsible for adding user input to a database,
+the API logic should be defined in this component.<br>
+On the upside, when the program makes many API calls, then it's more readable to keep the API logic in one place. Also, having all API logic in one place allows to extract some common logic and keep the code DRY.
+Because of these reasons, I've decided to extract the while API logic and keep it in a separate module. <br><br>
+
+Below you can see a part of my <code>Api.js</code> module. In this snippet I've included three methods: <br>
+- <code>getContacts()</code> that fetched the data from API, resolves the promise and returns data from this response; <br>
+- <code>addContact()</code> that makes a POST API request to add a data to a DB; <br>
+- <code>deleteContact()</code> that makes a POST API request to delete data. <br> <br>
+
+<script src="https://gist.github.com/Kotauror/deda7abff414996f0a159282a90d5c17.js"></script>
+
+<div class="article-section"> Create a <code>__mock__</code> directory and a mock module </div>
+
+On the same level, on which there is the class you want to mock, create <code>__mocks__</code> directory. Put mock of a relevant class in this directory.
+
+<pre><code>
+.
+├── config
+├── utils
+│   ├── __mocks__
+│   │   └── api.js   // mock of real class
+│   └── api.js       // real class
+├── node_modules
+└── views
+</pre></code>
+
+<div class="article-section"> Write a mock <code>Api.js</code> module </div>
+Essentially, when we test our app, we don't want to make a real API call. Because of this, in the mock of <code>Api.js</code> module, we want to hardcode the actions that will happen instead of a real API call.<br><br>
+
+<script src="https://gist.github.com/Kotauror/a95fcbef1bb6a701394cc23ffe178817.js"></script>
+
+As you see, in the <code>getContacts()</code> method, instead of going to a real API and fetching data from there, I've hardcoded information about two users (<code>Justyna</code> and <code>kosia</code>) that will be returned when the <code>Promise</code> created in the mock will be resolved.
+Similarly, in the <code>addContact()</code> I'm not making a real API request, but instead I've hardcoded a <code>Promise</code>.
+
+<div class="article-section"> Use the mock in your tests! </div>
+
+At this moment we have two <code>Api.js</code> modules - the "real" one and the mock, located in the <code>__mock__</code> directory.
+When a mock exists in <code>__mock__</code> directory for a given module, Jest's module system will use that module when explicitly calling <code>jest.mock('moduleName')</code>. <code>`moduleName`</code> should be replaced with a path to a real class we want to mock. Below, in the first test snippet,
+you will see an example of using <code>jest.mock</code>.
+<br><br>
+
+Let's take a look at the tests I wrote using this mock :)
+
+<div class="article-section-2"> Check if fetching data - <code>getContacts()</code> - works correctly </div>
+
+In my code, the contacts that are fetched using the <code>getContacts()</code> method from the <code>Api.js</code> module are then send to state in the most parent class - App.
+The <code>getContacts()</code> method is called immediately when the app is mounted:<br><br>
+
+<script src="https://gist.github.com/Kotauror/570270868c470720590a72a55cf1a546.js"></script>
+
+Therefore we can expect, that right after the app will be created, its state will have the data from the Api module in the state.
+This fact checked by the test below, which ensures that the exact data that we hardcoded to be returned from the Api module are in the state.<br><br>
+
+<script src="https://gist.github.com/Kotauror/b10c2ca3dd071cf9b412b262ca451c78.js"></script>
+
+I've also written an Enzyme test to ensure that the contacts fetched from the mocked Api are included in the DOM.<br><br>
+
+<script src="https://gist.github.com/Kotauror/9a397ab9ebd11ee586bbf4ce91c1df2b.js"></script>
+
+<div class="article-section-2"> Adding contacts </div>
+The second test - for adding contacts - is a bit more complicated.<br><br>
+<script src="https://gist.github.com/Kotauror/ea4cd47347b8bbef2441288f5235f8d4.js"></script>
+
+Let's analyze it step by step.<br><br>
+
+First, as you see, instead of shallowing an app, I've mounted it.
+<pre><code>
+const appParent = mount(<App />)
+</pre></code>
+It's because shallowing creates only the very component on which it's called, without its children. Mounting mounts the component together with the children.
+Because in this test I needed an access to a <code>FormComponent</code>, which is a child of <code>App</code>, I needed to mount the <code>App</code>, instead of shallowing it.
+
+I needed an acces to the <code>FormComponent</code> to simulate providing form input and submitting it:
+<pre><code>
+ beforeEach(() => {
+   appParent.find('.input-name').hostNodes().simulate('change', { target: { value: "Kosinka"}});
+   appParent.find('.input-phone').hostNodes().simulate('change', { target: { value: "5555"}});
+   appParent.find('.btn-add').hostNodes().simulate('click');
+ });
+</pre></code>
+
+Once the action was simulated, I check if the number of children in the app in DOM was increased by one
+<pre><code>
+it('has contacts on the website after adding', () => {
+  expect(appParent.find('ContactForm').exists())
+  expect(appParent.exists('.input-phone')).toEqual(true);
+  appParent.update()
+  expect(appParent.find('.contacts-list').children().length).toEqual(3);
+})
+</pre></code>
+
+Voila :)
+<div class="comments">
+  <%- include('../partials/comments-form.ejs', {value: 24}); %>
+  <%- include ../partials/comments-list.ejs %>
+</div>
+
+</main>
+
+<%- include ../partials/footer.ejs %>
