@@ -41,7 +41,7 @@ Below you can see a part of my <code>Api.js</code> module. In this snippet I've 
 
 <script src="https://gist.github.com/Kotauror/deda7abff414996f0a159282a90d5c17.js"></script>
 
-<div class="article-section"> Create a <code>__mock__</code> directory and a mock module </div>
+<div class="article-section"> Create a <code>__mocks__</code> directory and a mock module </div>
 
 On the same level, on which there is the class you want to mock, create <code>__mocks__</code> directory. Put mock of a relevant class in this directory.
 
@@ -66,8 +66,8 @@ Similarly, in the <code>addContact()</code> I'm not making a real API request, b
 
 <div class="article-section"> Use the mock in your tests! </div>
 
-At this moment we have two <code>Api.js</code> modules - the "real" one and the mock, located in the <code>__mock__</code> directory.
-When a mock exists in <code>__mock__</code> directory for a given module, Jest's module system will use that module when explicitly calling <code>jest.mock('moduleName')</code>. <code>`moduleName`</code> should be replaced with a path to a real class we want to mock. Below, in the first test snippet,
+At this moment we have two <code>Api.js</code> modules - the "real" one and the mock, located in the <code>__mocks__</code> directory.
+When a mock exists in <code>__mocks__</code> directory for a given module, Jest's module system will use that module when explicitly calling <code>jest.mock('moduleName')</code>. <code>`moduleName`</code> should be replaced with a path to a real class we want to mock. Below, in the first test snippet,
 you will see an example of using <code>jest.mock</code>.
 <br><br>
 
