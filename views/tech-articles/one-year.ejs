@@ -1,0 +1,86 @@
+<%- include ../partials/header.ejs %>
+<div class="likes">
+  <%- include('../partials/likes-form.ejs', {value: 25}); %>
+  Likes so far: <%= likesCount %><br>
+  <a href="/"> Back to main page <i class="fas fa-home"></i></a>
+</div>
+
+
+    <main>
+  <div class="article-title">One year coding anniversary</div>
+  <div class="sub-title">Wrapping up my past year in a blogpost</div>
+
+
+In a few days I'll be celebrating one year of coding - I've started learning ruby on the first day of November 2017!
+On this occasion I want to share with you some stories about my early struggles and how I feel about coding now.
+
+
+<div class="article-section"> Past career </div>
+
+As many of you know, I used to work as a lawyer. I knew some stuff about coding and how developers work looks like. I knew about it from clients, friends and my boyfriend,
+but never actually coded myself. Even though I never tried it, I was pretty sure it's something I would like to do. You might ask why I never tried it if I found it interesting.
+There are two reasons for it.<br><br>
+First of all, I believed it's not my path and I should focus on what I'm already good at. I feel that since my early years everyone knew I'm going to be a lawyer.
+I was smart, talkative and a bit too self-confident, a perfect future lawyer everyone thought.
+My years at school only confirmed it (at least this is what I thought). I was a graduate of the year of the best high school in my city (second biggest in PL), got accepted to the Law school with the highest score,
+had countless scholarships and prizes, good grades. Then worked for two 1st Tier law offices in Poland. Perfect career, great perspectives. It's hard to leave such well-structured life and pursue what you feel it's better for you.
+When your whole life seems to be a confirmation of the fact that you should be a lawyer, why leave?<br>
+Secondly, people around me were so-much-smarter. I considered myself smart, but comparing to my high school friends I felt not intelligent enough to even think about coding. Many of my friends back then were in algorithmic/IT class, were competing in international IT competitions, had internships at Google at the age of 16 and I felt how I - a humanities person - can even think of coding if coding is clearly for geniuses. I was smart, but - of course - not a genius.
+<br><br>
+It took me years to realize that:<br>
+- you don't have to follow a path that at the age of 15 you thought is going to be the best for you,<br>
+- you don't have to be a genius to be a coder, you can do more than you think. Don't let other tell you what you can and can't, check it yourself.<br>
+
+<div class="article-section"> Career change and ego drop </div>
+
+I moved from Kraków to London in November 2017 and applied for Makers Academy bootcamp. My boyfriend moved to London from San Francisco. I'm saying that because we were in it together -
+I wouldn't fight my insecurities without his help. In order to pass the interview for the December cohort, I've started learning straight after moving in.<br><br>
+
+The beginning was very hard. I've cried a few times a week, thinking I've made a huge mistake. My biggest fear was that I'm simply not smart enough and everyone around me lie that I can do it. They are all mistaken, because the reality (I thought) is that I can't. Take this sudo code simple function as na example:<br>
+<br>
+<code><pre>
+def tellNameOfBird(bird)
+  return "name of this bird is: " + bird
+</pre></code>
+
+This is a "Hello world" level function that simply returns a string with a bird's name in it.<br>
+It's easy, right? A 3 year old would understand what is happening here - you put a name of a bird to this function, connect is it a hardcoded sentence and return this sentence together with bird's name.<br>
+I struggled with it. "How the bird becomes a raven?"" I used to ask my bf, HOW DOES IT HAPPEN!? WHERE?! I couldn't understand how my program does it, at what point the bird becomes the raven and for how long it's going to stay a raven.<br><br>
+
+Once I understood that idea, the second biggest step was a for loop.<br><br>
+<code><pre>
+for i in 0..5
+   puts "Justyna, why don't you get is?"
+end
+</pre></code>
+
+Why is "i" an "i". What does it mean? How the for loop works like? My bf used to explain me how the iteration works, but I was still like BUT HOW?<br><br>
+
+Ok, I digested the iteration, then there were classes, such a big step! Wrapping my head around the fact that there are objects (BUT HOW!) was so abstract that it made me scarred.<br><br>
+
+All of that was so new, so abstract and so hard, that my ego dropped rapidly. From a successful young woman I start seeing myself as a person that was lied to about abilities and as a person that made a huge mistake.<br>
+I felt so bad, so panicked.<br><br>
+
+Now, when I think about that time, I feel that all my questions weren't actually that stupid. They proved that I wasn't only trying to remember stuff, but actually was trying to truly understand what was going on.
+
+<div class="article-section"> Changing the attitude, getting more confident</div>
+
+With every next codewars kata I was getting more confident. There were still days that I was doubting myself, but seeing tests go green because I'VE MADE THEM PASS was slowly building my confidence back.
+Then there was Makers Academy - 4 months of hard work. Mostly very happy time, very satisfying, with little cloudy days. I feel that the moment I've gained a lot of confidence in my skills was when I got my first job offer (not from 8th Light).
+I've passed a very demanding tech test and I knew that I smashed it! I felt that my skills are actually good enough to get an offer from a reputable company. That was such a kick!
+But I've decided not to go with this company, as I was aiming higher - at 8th Light that luckily accepted me :)<br><br>
+
+My time at 8th Light - past 5 months - changed my attitude towards problems. From a "this is so hard, how I - a newly coder - am supposed to do it?" person I evolved into "I will take small steps, plan it well and reach my goal" developer.
+It took me months to actually believe in myself and learn that I can and I will.<br><br>
+
+Right now coding is almost relaxing. I set myself goals and achieve them. If I can't do it, I set a smaller goal first. I'm so much better about getting feedback, I'm open for all suggestions and feel ready to improve my code. I don't take personal negative remarks about my code.
+I don't think that when people criticize my code they think I'm not good enough at this job. I'm just new to it, it's normal I make mistakes, but it doesn't make me any less valuable to the company. I am very happy about the place I'm in right now. I enjoy each day at 8th Light and I'm looking forward to my next year!
+
+<div class="comments">
+  <%- include('../partials/comments-form.ejs', {value: 25}); %>
+  <%- include ../partials/comments-list.ejs %>
+</div>
+
+</main>
+
+<%- include ../partials/footer.ejs %>

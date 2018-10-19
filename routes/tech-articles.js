@@ -188,4 +188,11 @@ module.exports = function(app) {
       })
     })
   })
+  app.get('/tech-articles/one-year', function(req, res) {
+    likesController.count(25).then(function(likesCount) {
+      commentsController.list(25).then(function(comments) {
+      res.render('tech-articles/one-year', {likesCount: likesCount, comments: comments});
+      })
+    })
+  })
 }
