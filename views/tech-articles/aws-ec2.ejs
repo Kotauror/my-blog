@@ -1,0 +1,78 @@
+<%- include ../partials/header.ejs %>
+
+<div class="likes">
+  <%- include('../partials/likes-form.ejs', {value: 26}); %>
+  Likes so far: <%= likesCount %><br>
+  <a href="/"> Back to main page <i class="fas fa-home"></i></a>
+</div>
+
+    <main>
+  <div class="article-title"> Launching AWS EC2 Instance</div>
+  <div class="sub-title"> Create and launch an instance of AWS EC2 service - a step by step guide</div>
+
+  <div class="article-section"> Picking the right AWS service for your needs </div>
+
+  Today was the first day of my DevOps project. I'm going to deploy to AWS my python-react application that I wrote about <u><a href="http://tech-and-chips.herokuapp.com/tech-articles/add-react-to-python">here</u></a>.
+  The first question that I needed to answer was: what AWS service am I going to use? <br><br>
+  At first my attention was drawned by <u><a href="https://aws.amazon.com/elasticbeanstalk/">AWS Elastic BeansTalk</u></a>. It is a tool that automatically handles the deployment details of capacity provisioning, load balancing, auto-scaling, and application health monitoring.
+  It's a combination of compute, storage and database services - an easy service to start with.<br>
+  After a call with my menthors at 8th Light we've decided to not go that way. Even though it seems to be the easiest solution to a newbie coder, it is very "magical" and allows to achieve goals without understanding the process of deployment.
+  We've decided to learn the services separately - use <u><a href="https://aws.amazon.com/ec2/?p=tile">EC2</u></a> to launch the webserver and <u><a href="https://aws.amazon.com/rds/?p=tile">RDS</u></a> for the SQL database.
+  <img src='https://i.imgflip.com/14dt6i.jpg' width="100%" />
+
+  <div class="article-section"> EC2 step by step </div>
+  / remember to hover over the images to make them bigger / <br><br>
+  In this secion I'll talk you through the process of creating, launching and connecting to your first AWS EC2 service. <br>
+  <div class="article-section-2"> Create an AWS account </div>
+  In order to create a simple EC2 instance, you don't need to pay anything - AWS offers free basic tools.
+  <div class="article-section-2"> Pick the service </div>
+  <img src='/awspics/AWS1_pick_ec2.png' width="100%" />
+  <div class="article-section-2"> Launch an instance </div>
+  <img src='/awspics/AWS2_launch_instance.png' width="100%" class="hoverItBig"/>
+  As you can see on this screenshot, I have 6 running instances and 2 Key Pairs. I'll talk about it further below.
+  <div class="article-section-2"> Pick Amazon Maching Image (AMI) </div>
+  In this step we pick the Amazon Machine Image (AMI) - from the free options that are available to us. AMI is a virtual (cloud) machine on which the application we want to deploy will be running. We can pick from a variaty of operating systems or even create out own.
+  I've decided to go with the most basic one.
+  <img src='/awspics/AWS3_ami.png' width="100%" class="hoverItBig"/>
+  <div class="article-section-2"> Pick an instance type </div>
+  As described on the screenshot below, in the next step we pick an instance type. As there is only one free options, there was not much choice ;)
+  <img src='/awspics/aws4_tier.png' width="100%" class="hoverItBig"/>
+  <div class="article-section-2"> Fill the details </div>
+  In this step I left all the fields as they were by default.
+  <img src='/awspics/aws5_details.png' width="100%" class="hoverItBig"/>
+  <div class="article-section-2"> Security Groups </div>
+  This step is super-ultra important. On this stage we decide what kind of traffic can reach our instance. We can create a new security froup and specify the inbound rules. <br>
+  We need to allow the SSH connections so that the devs can connect with the server via the SSH key (eg. from the console). In we're deploying a web app that has a server (and we will),
+  we need to allow HTTP requests for port 80. <br><br>
+
+  We can restrict the source to particular IPs, for exampe only your IP, but I'm not going to do it.
+
+  <img src='/awspics/aws6_sec_gr.png' width="100%" class="hoverItBig"/>
+  The security settings can be checked in the main console once the instance is launched.
+  <img src='/awspics/aws7_my_sec.png' width="100%" class="hoverItBig"/>
+  During the process of creating the instance, I've overlooked the need of defining the SSH security group.
+  As a result, I was facing a time-out error when trying to connect to the service using an SSH agent,
+  <img src='/awspics/aws12_error_ssh.png' width="100%" class="hoverItBig"/>
+  Updating the security group solved it.
+  <div class="article-section-2"> Launch! </div>
+  <img src='/awspics/aws8_launch.png' width="100%" class="hoverItBig"/>
+  <div class="article-section-2"> Connect to an instance </div>
+  Pick the instance you want to connect and click the blue <code> Connect</code> button.
+  <img src='/awspics/aws13_all_inst.png' width="100%" class="hoverItBig"/>
+  <div class="article-section-2"> Connection information </div>
+  A window as the one below will pop up. If you don't have a SSH key, you can create one in the Network & Security -> Key Pairs section of the EC2 dashboard.
+  <img src='/awspics/aws10_connInfo.png' width="100%" class="hoverItBig"/>
+  Copy the last line of the information and run it from the console.<br>
+  This is (more or less - depending on the AMI) what you should see now:
+  <img src='/awspics/aws_11_bash.png' width="100%" class="hoverItBig"/>
+  If you do it means that you've connected with your EC2 instance! <br>
+
+
+<div class="comments">
+  <%- include('../partials/comments-form.ejs', {value: 26}); %>
+  <%- include ../partials/comments-list.ejs %>
+</div>
+
+</main>
+
+<%- include ../partials/footer.ejs %>

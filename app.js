@@ -7,6 +7,7 @@ var favicon = require('serve-favicon');
 
 // var jquery = require('jquery');
 app.set('view engine', 'ejs');
+app.use(express.static(__dirname + '/public/images'));
 
 
 // app.use(express.static(__dirname + "/public"));

@@ -188,10 +188,19 @@ module.exports = function(app) {
       })
     })
   })
+  
   app.get('/tech-articles/one-year', function(req, res) {
     likesController.count(25).then(function(likesCount) {
       commentsController.list(25).then(function(comments) {
       res.render('tech-articles/one-year', {likesCount: likesCount, comments: comments});
+      })
+    })
+  })
+
+  app.get('/tech-articles/aws-ec2', function(req, res) {
+    likesController.count(26).then(function(likesCount) {
+      commentsController.list(26).then(function(comments) {
+      res.render('tech-articles/aws-ec2', {likesCount: likesCount, comments: comments});
       })
     })
   })
