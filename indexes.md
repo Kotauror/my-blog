@@ -24,3 +24,4 @@ add-react-to-python: 23
 react-jest-mock: 24
 one-year: 25
 aws-ec2: 26
+ec2-deploy: 27

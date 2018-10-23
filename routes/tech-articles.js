@@ -188,7 +188,7 @@ module.exports = function(app) {
       })
     })
   })
-  
+
   app.get('/tech-articles/one-year', function(req, res) {
     likesController.count(25).then(function(likesCount) {
       commentsController.list(25).then(function(comments) {
@@ -201,6 +201,14 @@ module.exports = function(app) {
     likesController.count(26).then(function(likesCount) {
       commentsController.list(26).then(function(comments) {
       res.render('tech-articles/aws-ec2', {likesCount: likesCount, comments: comments});
+      })
+    })
+  })
+
+  app.get('/tech-articles/ec2-deploy', function(req, res) {
+    likesController.count(27).then(function(likesCount) {
+      commentsController.list(27).then(function(comments) {
+      res.render('tech-articles/ec2-deploy', {likesCount: likesCount, comments: comments});
       })
     })
   })

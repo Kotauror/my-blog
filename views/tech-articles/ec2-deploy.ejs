@@ -1,0 +1,109 @@
+<%- include ../partials/header.ejs %>
+
+<div class="likes">
+  <%- include('../partials/likes-form.ejs', {value: 27}); %>
+  Likes so far: <%= likesCount %><br>
+  <a href="/"> Back to main page <i class="fas fa-home"></i></a>
+</div>
+
+    <main>
+  <div class="article-title"> Deploy aplication to EC2 instance</div>
+  <div class="sub-title"> Using DeployCode AWS service to deploy code to an instance of EC2</div>
+
+  <div class="article-section"> Introduction </div>
+
+  In this note I'll explain how to deploy an application to an existing AWS EC2 instance. The EC2 instance has been created as described in the previous blogpost.<br>
+  I'll use <u><a href="https://aws.amazon.com/codedeploy/">AWS CodeDeploy</u></a> for the code deployment. <br><br>
+
+  This post has five main parts:<br>
+  - creation of the AIM role; <br>
+  - configuration of the AIM role; <br>
+  - setting the AIM role of an EC2 instance; <br>
+  - Installation of AWS CodeDeploy agent for Linux EC2 AIM;<br>
+  - Deploy the code using CodeDeploy.<br>
+
+
+  <div class="article-section"> Create a AIM role </div>
+  / remember to hover over the images to make them bigger / <br><br>
+
+  We’re going to define a AIM role. As I mentioned in the last blogpost, Each EC2 instance has an AIM, which essentially is a virtual machine operating in the cloud. <br>
+  Defining AIM roles is like setting user accounts for your computer - you have different one for yourself, maybe one for your child and one for guests.
+  We’re going to do the same but in the AWS environment. AIM role will be an AWS identity with permission policies that determine what the identity can and cannot do in AWS. <br><br>
+
+  From the AWS services, pick the AIM link.
+  <img src='/awsDeploy/1_pick_AIM.png' width="100%" class="hoverItBig"/>
+  Click the Create Role link.
+  <img src='/awsDeploy/2_AIM_roles_create.png' width="100%" class="hoverItBig"/>
+  Pick the service that will use this role. In out case it will be EC2.
+  <img src='/awsDeploy/3_pick_service.png' width="100%" class="hoverItBig"/>
+  Pick or create a policy. I've decided to go with the default administrator access as it prvides full access to all AWS services.
+  <img src='/awsDeploy/4_pick_admin.png' width="100%" class="hoverItBig"/>
+  Pick the name for this role. I've decided to name it AdministratorRole.
+  <img src='/awsDeploy/5_name.png' width="100%" class="hoverItBig"/>
+  <div class="article-section"> Configure the role </div>
+  Once the role is cretated, click on it to add further configuration.
+  <img src='/awsDeploy/6_click_in_role.png' width="100%" class="hoverItBig"/>
+  We're going to update the trust relationship. Click as below.
+  <img src='/awsDeploy/7_trust_edit.png' width="100%" class="hoverItBig"/>
+  Under <code> Services </code> you should see <code>"ec2.amazonaws.com"</code>. It means that this role is permitted to use this service.
+  As we will use this role also within the CodeDeploy service, we need to update the <code>Services</code> as follows:
+  <img src='/awsDeploy/8_trust_update.png' width="100%" class="hoverItBig"/>
+  <div class="article-section"> Set the IAM role of the EC2 instance </div>
+  Go to the EC2 instance to which you want to deploy the code and set the IAM role. <br>
+  <img src='/awsDeploy/9_setIAM.png' width="100%" class="hoverItBig"/> <br>
+  <img src='/awsDeploy/10_pick.png' width="100%" class="hoverItBig"/>
+  <div class="article-section"> Install AWS CodeDeploy agent for Linux EC2 AIM </div>
+  Now we move to the second step - installation of the AWS CodeDeploy agent. The AWS CodeDeploy agent is a software package that,
+  when installed and configured on an instance, enables that instance to be used in AWS CodeDeploy deployments. In other words,
+  without this move we wouldn't be able to use CodeDeploy on our instance's virtual operating system. <br><br>
+  First, you need to connect with the EC2 instance for which you want to install the CodeDeploy agent. The procedure of connecting with an instance was described in the previous post. <br>
+  In order to install it, I followed an official AWS tutorial available <a href="https://docs.aws.amazon.com/codedeploy/latest/userguide/codedeploy-agent-operations-install-linux.html"><u>here</u></a>.
+  Once it was ready, this is what I saw in the console:
+  <img src='/awsDeploy/11_installed.png' width="100%" class="hoverItBig"/>
+  <div class="article-section"> Deploy the code </div>
+  Right now we have:<br>
+  - an "empty" EC2 instance (mine is called <code>secondec2</code>) which has CodeDeploy agent installed;<br>
+  - a AIM role (AdministratorRole); <br> <br>
+
+  Now it's time to deploy a code to the EC2 instance! <br><br>
+
+  In order to do it, go to AWS services and pick CodeDeploy:
+  <img src='/awsDeploy/12_code_deploy.png' width="100%" class="hoverItBig"/>
+  <div class="article-section-2"> Create Application </div>
+  As our EC2 instance is empty, we need to create an application to deploy. In order to do it, click <code>Create Application</code> button.
+  <img src='/awsDeploy/13_create_app.png' width="100%" class="hoverItBig"/>
+  Name the application and pick the EC2 compute platform.
+  <img src='/awsDeploy/15_name_app.png' width="100%" class="hoverItBig"/>
+  Out applciation should be now successfully created, but still nothing has been deployed anywhere :P In order to do it, we need to create a deployment group first.
+  <div class="article-section-2"> Create DeploymentGroup </div>
+  <img src='/awsDeploy/16_create_deployment.png' width="100%" class="hoverItBig"/>
+  Now we need to fill all the information needed. We start with the name of DeploymentGroup and choose a service role. We can pick one of the AIM roles that has CodeDeploy permissions.
+  The AdministratorRole we created earlier meets this criteria and because of this it can be picked from the menu.
+  <img src='/awsDeploy/17_define1.png' width="100%" class="hoverItBig"/>
+  Next we need to configure the environment. This step is super important as now we pick the services to which we're going to deploy the code. Select Amazon EC2 instances and then from the Key menu pick nameand from Value pick the name of the instance we want to deploy to.
+  <img src='/awsDeploy/18_define2.png' width="100%" class="hoverItBig"/>
+  Now we're ready to create the DeploymentGroup.
+  <img src='/awsDeploy/19_finish_dg.png' width="100%" class="hoverItBig"/>
+  <div class="article-section-2"> Create a deploy within the DeploymentGroup </div>
+  We need to pick the Deployment Group we want to use:
+  <img src='/awsDeploy/20_pickdg.png' width="100%" class="hoverItBig"/>
+  Click create deployment:
+  <img src='/awsDeploy/21_click_create_d.png' width="100%" class="hoverItBig"/>
+  Pick the source of application - either AWS S3 or GitHub.<br>
+  If you pick GitHub, authorize yourself, provide repository name and the last commit number. Then click create deployment.
+  <img src='/awsDeploy/22_deploy.png' width="100%" class="hoverItBig"/>
+  You can see all deployments in here:
+  <img src='/awsDeploy/23_history.png' width="100%" class="hoverItBig"/>
+  <div class="article-section"> Check out the app! </div>
+  Once you've finished the steps, you can check out the application! Go to the app to which you've deployed the app and copy its Public IP.
+  <img src='/awsDeploy/23_history.png' width="100%" class="hoverItBig"/>
+  Paste this IP to the browser and enjoy your application!
+
+<div class="comments">
+  <%- include('../partials/comments-form.ejs', {value: 27}); %>
+  <%- include ../partials/comments-list.ejs %>
+</div>
+
+</main>
+
+<%- include ../partials/footer.ejs %>
