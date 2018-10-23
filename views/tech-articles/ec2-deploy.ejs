@@ -12,7 +12,9 @@
 
   <div class="article-section"> Introduction </div>
 
-  In this note I'll explain how to deploy an application to an existing AWS EC2 instance. The EC2 instance has been created as described in the previous blogpost.<br>
+  In this note I'll explain how to deploy an application to an existing AWS EC2 instance. <br>
+  The EC2 instance has been created as described in the previous blogpost.<br>
+  In this note I'll not talk about how to prepare the application itself. This issue will be covered in next post.<br>
   I'll use <u><a href="https://aws.amazon.com/codedeploy/">AWS CodeDeploy</u></a> for the code deployment. <br><br>
 
   This post has five main parts:<br>
@@ -90,8 +92,21 @@
   Click create deployment:
   <img src='/awsDeploy/21_click_create_d.png' width="100%" class="hoverItBig"/>
   Pick the source of application - either AWS S3 or GitHub.<br>
-  If you pick GitHub, authorize yourself, provide repository name and the last commit number. Then click create deployment.
+  If you pick GitHub, authorize yourself, provide repository name and the last commit number.
   <img src='/awsDeploy/22_deploy.png' width="100%" class="hoverItBig"/>
+  Pay attention to the advanced options.<br>
+  The importance of the first checkbox - "Don't fail the deployment to an instance if this lifecycle event on the instance fails" - will be discussed in the next note.
+  In here it's worth mentioning that each deployment has its lifecycle and some events on it can fail.
+  For example, we would like to remove all .py files from a certain directory. In case there is a fail because there is no .py file in the directory,
+  we still want the deployment to succesfully finish.<br><br>
+
+  Secondly (second highlighted checkbox), some revisions concern files that were already revised. Ticking this box prevents from the following error: <code> the deployment failed because a specified file already exists at this location</code>.
+  <br><br>
+  Then click create deployment.
+
+  <img src='/awsDeploy/advanced.png' width="100%" class="hoverItBig"/>
+
+
   You can see all deployments in here:
   <img src='/awsDeploy/23_history.png' width="100%" class="hoverItBig"/>
   <div class="article-section"> Check out the app! </div>
