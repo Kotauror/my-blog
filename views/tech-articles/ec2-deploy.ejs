@@ -12,22 +12,22 @@
   <div class="article-section"> Introduction </div>
 
   In this note I'll explain how to deploy an application to an existing AWS EC2 instance. <br>
-  The EC2 instance has been created as described in the previous blogpost.<br>
-  In this note I'll not talk about how to prepare the application itself. This issue will be covered in next post.<br>
+  The EC2 instance has been created as described in the <u><a href="http://tech-and-chips.herokuapp.com/tech-articles/aws-ec2">previous blogpost</a></u>.<br>
+  In this note I'll <b>---NOT---</b> talk about how to write the application itself. This issue will be covered in next post.<br>
   I'll use <u><a href="https://aws.amazon.com/codedeploy/">AWS CodeDeploy</u></a> for the code deployment. <br><br>
 
   This post has five main parts:<br>
-  - creation of the AIM role; <br>
-  - configuration of the AIM role; <br>
-  - setting the AIM role of an EC2 instance; <br>
-  - Installation of AWS CodeDeploy agent for Linux EC2 AIM;<br>
-  - Deploy the code using CodeDeploy.<br>
+  1. Creation of the AIM role; <br>
+  2. Configuration of the AIM role; <br>
+  3. Setting the AIM role of an EC2 instance; <br>
+  4. Installation of AWS CodeDeploy agent for Linux EC2 AIM;<br>
+  5. Deployment the code using CodeDeploy.<br>
 
 
-  <div class="article-section"> Create a AIM role </div>
+  <div class="article-section"> 1. Create a AIM role </div>
   / remember to hover over the images to make them bigger / <br><br>
 
-  We’re going to define a AIM role. As I mentioned in the last blogpost, Each EC2 instance has an AIM, which essentially is a virtual machine operating in the cloud. <br>
+  First we’re going to define a AIM role. As I mentioned in the last blogpost, Each EC2 instance has an AIM, which essentially is a virtual machine operating in the cloud. <br>
   Defining AIM roles is like setting user accounts for your computer - you have different one for yourself, maybe one for your child and one for guests.
   We’re going to do the same but in the AWS environment. AIM role will be an AWS identity with permission policies that determine what the identity can and cannot do in AWS. <br><br>
 
@@ -41,9 +41,9 @@
   <img src='/awsDeploy/4_pick_admin.png' width="100%" class="hoverItBig"/>
   Pick the name for this role. I've decided to name it AdministratorRole.
   <img src='/awsDeploy/5_name.png' width="100%" class="hoverItBig"/>
-  <div class="article-section"> Configure the role </div>
+  <div class="article-section"> Configure the AIM role </div>
   Once the role is cretated, click on it to add further configuration.
-  <img src='/awsDeploy/6_click_in_role.png' width="100%" class="hoverItBig"/>
+  <img src='/awsDeploy/6_click_on_role.png' width="100%" class="hoverItBig"/>
   We're going to update the trust relationship. Click as below.
   <img src='/awsDeploy/7_trust_edit.png' width="100%" class="hoverItBig"/>
   Under <code> Services </code> you should see <code>"ec2.amazonaws.com"</code>. It means that this role is permitted to use this service.
@@ -54,7 +54,7 @@
   <img src='/awsDeploy/9_setIAM.png' width="100%" class="hoverItBig"/> <br>
   <img src='/awsDeploy/10_pick.png' width="100%" class="hoverItBig"/>
   <div class="article-section"> Install AWS CodeDeploy agent for Linux EC2 AIM </div>
-  Now we move to the second step - installation of the AWS CodeDeploy agent. The AWS CodeDeploy agent is a software package that,
+  Now we move to the next step - installation of the AWS CodeDeploy agent. The AWS CodeDeploy agent is a software package that,
   when installed and configured on an instance, enables that instance to be used in AWS CodeDeploy deployments. In other words,
   without this move we wouldn't be able to use CodeDeploy on our instance's virtual operating system. <br><br>
   First, you need to connect with the EC2 instance for which you want to install the CodeDeploy agent. The procedure of connecting with an instance was described in the previous post. <br>
@@ -71,14 +71,14 @@
   In order to do it, go to AWS services and pick CodeDeploy:
   <img src='/awsDeploy/12_code_deploy.png' width="100%" class="hoverItBig"/>
   <div class="article-section-2"> Create Application </div>
-  As our EC2 instance is empty, we need to create an application to deploy. In order to do it, click <code>Create Application</code> button.
+  As our EC2 instance is empty, we need to create an application to deploy. In order to do it, click <code>Create Application</code> button. Btw. we won't really "create" the application, but iport it from S3 or GitHub - the name is a bit misleading.
   <img src='/awsDeploy/13_create_app.png' width="100%" class="hoverItBig"/>
   Name the application and pick the EC2 compute platform.
   <img src='/awsDeploy/15_name_app.png' width="100%" class="hoverItBig"/>
-  Out applciation should be now successfully created, but still nothing has been deployed anywhere :P In order to do it, we need to create a deployment group first.
+  Our application should be now successfully created, but still nothing has been deployed anywhere :P In order to do it, we need to create a deployment group first.
   <div class="article-section-2"> Create DeploymentGroup </div>
   <img src='/awsDeploy/16_create_deployment.png' width="100%" class="hoverItBig"/>
-  Now we need to fill all the information needed. We start with the name of DeploymentGroup and choose a service role. We can pick one of the AIM roles that has CodeDeploy permissions.
+  After clicking <code>Create deployment group</code> we need to fill all the information needed. We start with the name of DeploymentGroup and choose a service role. We can pick one of the AIM roles that has CodeDeploy permissions.
   The AdministratorRole we created earlier meets this criteria and because of this it can be picked from the menu.
   <img src='/awsDeploy/17_define1.png' width="100%" class="hoverItBig"/>
   Next we need to configure the environment. This step is super important as now we pick the services to which we're going to deploy the code. Select Amazon EC2 instances and then from the Key menu pick nameand from Value pick the name of the instance we want to deploy to.
@@ -95,12 +95,9 @@
   <img src='/awsDeploy/22_deploy.png' width="100%" class="hoverItBig"/>
   Pay attention to the advanced options.<br>
   <img src='/awsDeploy/advanced.png' width="100%" class="hoverItBig"/>
-  The importance of the first checkbox - "Don't fail the deployment to an instance if this lifecycle event on the instance fails" - will be discussed in the next note.
-  In here it's worth mentioning that each deployment has its lifecycle and some events on it can fail.
-  For example, we would like to remove all .py files from a certain directory. In case there is a fail because there is no .py file in the directory,
-  we still want the deployment to succesfully finish.<br><br>
-
-  Secondly (second highlighted checkbox), some revisions concern files that were already revised. Ticking this box prevents from the following error: <code> the deployment failed because a specified file already exists at this location</code>.
+  Ticking the first option can be useful if you want to see a result of deployment even if one of the deployment lifecycle events results in error. I'll talk about the lifecycle in the next post.
+<br><br>
+  Secondly (second highlighted checkbox), some revisions concern files that were already revised. Ticking this box prevents from the following error: <code> the deployment failed because a specified file already exists at this location</code>. I tick it everytime I make a deployment.
   <br><br>
   Then click create deployment.
 
