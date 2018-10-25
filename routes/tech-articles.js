@@ -212,4 +212,12 @@ module.exports = function(app) {
       })
     })
   })
+
+  app.get('/tech-articles/flaskCodeDeploy', function(req, res) {
+    likesController.count(28).then(function(likesCount) {
+      commentsController.list(28).then(function(comments) {
+      res.render('tech-articles/flaskCodeDeploy', {likesCount: likesCount, comments: comments});
+      })
+    })
+  })
 }

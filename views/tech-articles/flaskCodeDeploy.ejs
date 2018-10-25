@@ -1,0 +1,119 @@
+<%- include ../partials/header.ejs %>
+
+<div class="likes">
+  <%- include('../partials/likes-form.ejs', {value: 28}); %>
+  Likes so far: <%= likesCount %><br>
+  <a href="/"> Back to main page <i class="fas fa-home"></i></a>
+</div>
+
+    <main>
+  <div class="article-title"> Deploying python flask application to the EC2 via CodeDeploy </div>
+
+In the past two blogs I talked about:<br>
+- <u><a href="http://tech-and-chips.herokuapp.com/tech-articles/aws-ec2">launching an configuring an AWS EC2 instance</a></u>; <br>
+- <u><a href="http://tech-and-chips.herokuapp.com/tech-articles/ec2-deploy">using AWS CodeDeploy to deploy application to this EC2 instance</u></a>.<br><br>
+
+In this note I'm going to fill the blank and talk about how to actually write an application that can be deployed to the EC2 instance using CodeDeploy. <br>
+I'll address this issue on an example of a Python Flask application. Its code is available <u><a href="https://github.com/Kotauror/sampleAppPython">here</a></u>.
+
+  <div class="article-section"> Installation of flask on the virtual machine </div>
+As you know, EC2 has its own AIM  (template that contains the software configuration - operating system, application server, and applications - required to launch your instance). In my case it's Amazon Linux. It comes clean - it's like having a new computer, without anything installed on it. <br>
+In order to run a flask application on this machine, we first need to install flask. Since we're working on linux, we need to use "linux" commands. <br>
+First, connect to your virtual machine via SSH. Then run the following scripts: <br>
+<code> <pre>
+$ sudo yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-$(rpm -E '%{rhel}').noarch.rpm
+$ sudo yum install -y https://centos7.iuscommunity.org/ius-release.rpm
+$ sudo yum update
+$ sudo yum install -y python36u python36u-libs python36u-devel python36u-pip
+$ sudo yum -y install python-pip
+$ sudo pip install flask
+</pre></code>
+Once you do it, try to run <code>python</code>, <code>flask</code> and <code>pip</code> commands. If they work it means you're ready to move on.
+<div class="article-section"> The flask application </div>
+Writing a basic flask application is pretty straightforward. Simply define a root route and return a string on it:
+<script src="https://gist.github.com/Kotauror/fac287ce28677fca2c1d9c5366f2eef9.js"></script>
+<div class="article-section"> appspec.yml file and the lifecycle scripts </div>
+The real difficulty with deploying app using CodeDeploy is to properly write the appspec.yml file and the lifecycle scripts. I'll start with the appspec file and then move to the scripts.
+<div class="article-section-2"> appspec.yml file </div>
+The appspec.yml file (application specification) needs to be included on the root of any code that is deployed using CodeDeploy. This file helps AWS understand how to deal with the software you want to deploy.
+The deployment is essentially sending the files to the virtual machine (EC2) we created and running them if needed. AWS needs to know what files to deploy and where to put them on the virtual machine. Moreover, if we want the files to be executed, we need to tell AWS how to make them run. <br><br>
+Below you can see my appspec.yml file for the python flask app.
+<script src="https://gist.github.com/Kotauror/8866e05215bd2cabcaf01931050e1c30.js"></script> <br>
+<code>Version</code> and <code>os</code> are pretty obvious, so let's take a look at the <code>files</code> section.<br><br>
+First there is <code>source</code>. It tells CodeDeploy where to find code to run. It doesn't have to be a specific file, it can be also a path to a directory, for example the whole root (<code>/</code>).<br>
+Next there is <code>destination</code>. It tells us where we will find the files once they are deployed. According to this path, we will find the deployed files on /var/www/http.
+Let's check if that's true :D <br><br>
+I've already deployed a python app using this appcpes.yml file, so should find the app file on this route. In order to check it we need to first connect to our EC2 instance.<br>
+As you can see on the screenshot below, once we connect, we land in home/ec2-user directory.
+<img src='/awsDeploy/pathfile.png' width="100%" class="hoverItBig"/>
+So we needed to go to levels up and then enter /var/www/http where we found the python app. <br><br>
+
+The second part of the appspec.yml file is a series of <code>hooks</code> (lifecycle scripts) where we describe what should be run when.
+<div class="article-section-2"> Lifecycle scripts </div>
+The CodeDeploy lifecycle knows seven different hooks as illustrated below. Each of them - if defined - is run during the deployment process. They always run in the same order, as illustrated on the picture below:
+<img src='/awsDeploy/hooks.png' width="100%" class="hoverItBig"/>
+The result of running the scripts can be checked for each deployment on the AWS CodeDeploy dashboard. <br>
+For my flask application I've defined three hooks: ApplicationStop, BeforeInstall and ApplicationStart.
+<div class="article-section-2"> ApplicationStop hook </div>
+In this hook you can specify scripts killing applications or removing packages. Imagine that we have a hello world python app running.
+If we want to change it to return "hello lolz", we first need to stop it in order to deploy a new one and start it. <br>
+This can cause a situation where we stopped an old version of the server but the new one is not yet in place. Such situations are handled by balancers that can be defined on deployment groups.
+<img src='/awsDeploy/balancer.png' width="100%" class="hoverItBig"/>
+There are two crucial things that need to be said about the ApplicationStop hook:<br>
+- it is not executed for the first deployment on an instance; <br>
+- it occurs even <b>---before---</b> the application revision is downloaded.<br><br>
+Because it is not executed for the first deployment on an instance, it may happend that you saw a successful deployment of an application that has a broken ApplicationStop hook - happend to me lol.
+<img src="https://i.imgflip.com/ka7t1.jpg" width="100%">
+You see it all green, you're happy, try to make a small change in the code to make sure everything is fine,
+deploy it again and ups - it fails on ApplicationStop hook. Now you try to fix it, deploy it again and bum, fails again on the ApplicationStop hook. But you notice something wrong - the error message suggests that the ApplicationStop script is still the same even though you changed it - HOW WEIRD.
+So you decide to remove the content of this hook completly, redeploy and it still fails, still suggesting that you're using the ApplicationStop hook you deployed when you were deploying the code for the first time.
+<img src="https://vignette.wikia.nocookie.net/central/images/1/18/235434734_Are_You_Kidding_Me_answer_11_xlarge.jpg/revision/latest?cb=20150923120747" width="100%">
+
+The reason why it happens is because the ApplicationStop hook occurs even <b>---before---</b> the application revision is downloaded.
+If you want to change the ApplicationStop event script, you basically have two options:<br>
+- stop the running application manually (by connecting to the EC2 instance via SSH and killing the process) and then you deploy the new ApplicationStop script or <br>
+- create a deployment that ignores ApplicationStop errors. You can do it by ticking the first checkbox when deploying (ignore the second red mark, I reused this image from the prvious blogpost :D):
+<img src='/awsDeploy/advanced.png' width="100%" class="hoverItBig"/>
+
+Now that we know a bit about the ApplicationStop hook, let's take a look at the stopping script I wrote:
+<script src="https://gist.github.com/Kotauror/574c510329b08c5db08c8002624ab596.js"></script>
+So much fuss about one line, right?<br><br>
+- The <code>ps</code> gives you the list of all the processes. <br>
+- The <code>grep</code> filters processed based on your search string, <code>[p]</code> filters out the actual grep process itself. <br>
+- The <code>awk '{print $2}'</code> gives you the second field of each line, which is the PID of the process. <br>
+- kill <code>$(x)</code> means that we will kill whatever x returns and x returns PID of the process.
+<div class="article-section-2"> BeforeInstall hook </div>
+This hook is fairly easy. In here you "just" need to list all plugins and packages that are needed to ensure the code to run.
+In case of my application it was the same code that I used to install flask on my virtual machine (see section Intallation of flask on the virtual machine) above.
+<div class="article-section-2"> ApplicationStart hook </div>
+Last but not least, ApplicationStart script. This one will make our application run if needed. This is the one I used:
+<script src="https://gist.github.com/Kotauror/b7fb289ddf80c16f67898ac79e24d4bc.js"></script><br>
+Now let's analyse it step by step as these two lines may look friendly, but they are actually pretty complicated.<br><br>
+As you remember from the order of the hooks (see above), the ApplicationStart hook takes place after the application is installed. The file should be already in place, ready for running.
+In order to run it, we first need to find ourselves in the directory where it's placed, hence <code>cd /var/www/html/</code>, which was the file destination.<br><br>
+
+Then there is the start script. <br><br>
+<code>nohup</code> and <code>&</code> and the beginning and end mean that the program will run in the background. Thanks to this operation, the deployment will end. Otherwise, it would stay on ApplicationStart hook as long as the server would operate (see the <i>"Long-running processes can cause deployments to fail"</i>
+ section of <u><a href="https://docs.aws.amazon.com/codedeploy/latest/userguide/troubleshooting-deployments.html#troubleshooting-long-running-processes">this</u></a> AWS documentation).<br><br>
+ <code>sudo flask run</code> piece makes the flask application run. Since we're in the directory where the app is located and <code>flask run</code> command looks for app.py files, we don't need to call a specific file. If we would like to be more specific, we could write
+ <code>sudo FLASK_APP=app.py flask run</code><br><br>
+ Next we need to set the port to 80(<code>--port=80</code>), as flask by default uses port 5000. Since my security group doesn't accept 5000 on the inbound but accepts 80, I've decided to set the port to 80 (I could have not changed the port but changed the security group instead).<br><br>
+ Then I needed to set the host. By default the flask server runs on localhost. It means that the application is visible only to the machine in the local network (in my case it was the linux virtual machine), but it cannot be accessed on a different network. For example, it wasn't visible to my EC2 application.
+ Setting host to <code>0.0.0.0</code> meant that anyone (with any IP) can use this application. Without adding this host reference, my python app was working only locally, on my virtual machine, but was not visible to the EC2 instance to which it was deployed. <br>
+ Now - after the chance - it's visible across the web - you can access it by simply entering <u><a href="http://52.90.118.161">http://52.90.118.161</u></a> in the browser :D. <br><br>
+
+ Last but not least we have this lovely part:<code> > /dev/null 2>&1 &</code>. I've added this line after the deployment was pending on ApplicationStart hook for more than 10 minutes. This line directs eveything that is returned by the start line (eg. standardout, errors) to /dev/null.
+  Thanks to this operation the deployment won't be blocked (see more <u><a href="https://docs.aws.amazon.com/codedeploy/latest/userguide/troubleshooting-deployments.html#troubleshooting-long-running-processes">here</a></u> and <u><a href="https://forums.aws.amazon.com/thread.jspa?threadID=181616">here</a></u>).<br>
+  <img src='/awsDeploy/after12hours.png' width="100%" class="hoverItBig"/>
+  <div class="photo-data">  This is one of my fav comments ever - it was the last comment is a thread that explained the need to add <code> > /dev/null 2>&1 &</code>. I can totally feel the author.</div>
+And that's it!
+<img src="https://i.pinimg.com/originals/0f/5c/82/0f5c82fd45a5e28ef414797195f7cb17.jpg" width="100%">
+
+<div class="comments">
+  <%- include('../partials/comments-form.ejs', {value: 28}); %>
+  <%- include ../partials/comments-list.ejs %>
+</div>
+
+</main>
+
+<%- include ../partials/footer.ejs %>
